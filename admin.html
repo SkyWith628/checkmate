@@ -351,6 +351,34 @@
     }
     .btn-add-val:hover { border-color: var(--gold); color: var(--gold); }
 
+    /* ── 조합 이미지 ── */
+    .combo-img-section { margin-top: 8px; }
+    .btn-gen-combo {
+      width: 100%; padding: 9px; background: transparent; border: 1px dashed var(--border);
+      color: var(--text-muted); font-family: var(--font-body); font-size: 11px;
+      letter-spacing: 2px; text-transform: uppercase; cursor: pointer; transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-gen-combo:hover { border-color: var(--gold); color: var(--gold); }
+    .combo-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .combo-row {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg); border: 1px solid var(--border); padding: 8px 10px;
+    }
+    .combo-label { font-size: 11px; letter-spacing: 1px; color: var(--text); flex-shrink: 0; min-width: 130px; }
+    .combo-img-preview {
+      width: 40px; height: 40px; flex-shrink: 0; background: #222;
+      overflow: hidden; display: flex; align-items: center; justify-content: center;
+    }
+    .combo-img-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .combo-img-preview span { font-size: 16px; color: #555; }
+    .combo-upload-btn {
+      padding: 6px 12px; background: none; border: 1px solid var(--border);
+      color: var(--text-muted); font-family: var(--font-body); font-size: 10px;
+      letter-spacing: 1px; text-transform: uppercase; cursor: pointer; transition: border-color 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .combo-upload-btn:hover { border-color: var(--gold); color: var(--gold); }
+
     /* ── 필터 행 (모달용 · 여러 필터 추가 예정) ── */
     .filter-section { border: 1px solid var(--border); margin-bottom: 16px; }
     .filter-section-title {
@@ -824,19 +852,6 @@
         <label for="p-desc">상품 설명</label>
         <input class="modal-input" type="text" id="p-desc" placeholder="간단한 설명 (선택)">
       </div>
-      <div class="filter-section">
-        <p class="filter-section-title">필터</p>
-        <div class="filter-row">
-          <span class="filter-row-label">성별</span>
-          <div class="filter-chips">
-            <button type="button" class="filter-chip active" data-val="" onclick="selectGender(this)">전체</button>
-            <button type="button" class="filter-chip" data-val="women" onclick="selectGender(this)">여성</button>
-            <button type="button" class="filter-chip" data-val="men" onclick="selectGender(this)">남성</button>
-          </div>
-        </div>
-        <!-- 여기에 필터 행 추가 예정 -->
-      </div>
-      <input type="hidden" id="p-gender" value="">
       <div class="modal-row">
         <div class="modal-field">
           <label for="p-stock">재고 수량</label>
@@ -856,6 +871,12 @@
         <div class="option-groups-wrap" id="option-groups-wrap"></div>
         <button type="button" class="btn-add-group" onclick="addOptionGroup()">＋ 옵션 그룹 추가</button>
         <p style="font-size:10px;color:#444;letter-spacing:1px;margin-top:6px;">예) 이름: 색상 / 레드 → 198,000원 / 골드 → 250,000원 (가격 비우면 상품 기본가 적용)</p>
+      </div>
+      <div class="modal-field combo-img-section" id="combo-img-field" style="display:none;">
+        <label>조합별 이미지 <span style="font-size:9px;letter-spacing:1px;color:#555;">(옵션 조합마다 다른 사진)</span></label>
+        <button type="button" class="btn-gen-combo" onclick="generateComboImages()">⟳ 조합 목록 생성 / 새로고침</button>
+        <div class="combo-list" id="combo-list"></div>
+        <input type="file" id="combo-img-file" accept="image/*" style="display:none" onchange="onComboFileSelected(event)">
       </div>
       <div class="modal-field">
         <label>이미지 <span style="font-size:9px;letter-spacing:1px;color:#555;">(여러 장 선택 가능 · 첫 번째가 대표 이미지)</span></label>
@@ -973,6 +994,8 @@
     // pendingImages: [{ file: File|null, url: string, previewUrl: string }]
     let pendingImages = [];
     let optionGroups  = []; // [{ label: string, values: string[] }]
+    let optionImages  = {}; // { "val1|val2": url }
+    let _comboUploadKey = null; // 현재 파일 선택 중인 콤보 키
     let allUsers    = [];
     let allAdmins   = [];
     let allRegular  = [];
@@ -1545,14 +1568,83 @@
       }).join('');
     }
 
+    function updateComboImgFieldVisibility() {
+      const hasGroups = optionGroups.some(g => g.label.trim() && g.values.some(v => v.name.trim()));
+      document.getElementById('combo-img-field').style.display = hasGroups ? '' : 'none';
+    }
+
+    window.generateComboImages = () => {
+      const groups = optionGroups
+        .filter(g => g.label.trim() && g.values.some(v => v.name.trim()))
+        .map(g => g.values.filter(v => v.name.trim()).map(v => v.name.trim()));
+      if (groups.length === 0) return;
+
+      // 카테시안 곱으로 모든 조합 생성
+      const combos = groups.reduce((acc, vals) =>
+        acc.flatMap(a => vals.map(v => [...a, v])), [[]]
+      ).map(arr => arr.join('|'));
+
+      const list = document.getElementById('combo-list');
+      list.innerHTML = combos.map(key => {
+        const url = optionImages[key] || '';
+        const label = key.replace(/\|/g, ' · ');
+        return `
+          <div class="combo-row" id="combo-row-${CSS.escape(key)}">
+            <span class="combo-label">${label}</span>
+            <div class="combo-img-preview" id="combo-preview-${CSS.escape(key)}">
+              ${url ? `<img src="${url}" alt="">` : '<span>＋</span>'}
+            </div>
+            <button type="button" class="combo-upload-btn" onclick="triggerComboUpload('${key.replace(/'/g,"\\'")}')">
+              ${url ? '변경' : '이미지 업로드'}
+            </button>
+            ${url ? `<button type="button" class="btn-remove-val" style="height:28px;" onclick="removeComboImage('${key.replace(/'/g,"\\'")}')">✕</button>` : ''}
+          </div>`;
+      }).join('');
+    };
+
+    window.triggerComboUpload = (key) => {
+      _comboUploadKey = key;
+      document.getElementById('combo-img-file').value = '';
+      document.getElementById('combo-img-file').click();
+    };
+
+    window.onComboFileSelected = async (e) => {
+      const file = e.target.files[0];
+      if (!file || !_comboUploadKey) return;
+      const key = _comboUploadKey;
+      const previewEl = document.getElementById(`combo-preview-${CSS.escape(key)}`);
+      if (previewEl) previewEl.innerHTML = '<span style="font-size:10px;color:#888;">업로드중...</span>';
+
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('upload_preset', 'checkmate_upload');
+        const res = await fetch('https://api.cloudinary.com/v1_1/dvholzgjx/image/upload', { method: 'POST', body: fd });
+        const json = await res.json();
+        if (!json.secure_url) throw new Error('업로드 실패');
+        optionImages[key] = json.secure_url;
+      } catch {
+        if (previewEl) previewEl.innerHTML = '<span style="font-size:10px;color:red;">실패</span>';
+        return;
+      }
+      generateComboImages();
+    };
+
+    window.removeComboImage = (key) => {
+      delete optionImages[key];
+      generateComboImages();
+    };
+
     window.addOptionGroup = () => {
       optionGroups.push({ label: '', values: [] });
       renderOptionGroups();
+      updateComboImgFieldVisibility();
     };
 
     window.removeOptionGroup = (idx) => {
       optionGroups.splice(idx, 1);
       renderOptionGroups();
+      updateComboImgFieldVisibility();
     };
 
     window.addOptionValue = (groupIdx) => {
@@ -1586,12 +1678,6 @@
       document.getElementById('p-soldout').value = isSoldOut ? 'true' : 'false';
       document.querySelectorAll('.filter-chip[data-status]').forEach(b =>
         b.classList.toggle('active', (b.dataset.status === 'soldout') === isSoldOut));
-      // 성별 버튼 활성화
-      const gVal = product?.gender || '';
-      document.getElementById('p-gender').value = gVal;
-      document.querySelectorAll('.filter-chip[data-val]').forEach(b => {
-        b.classList.toggle('active', b.dataset.val === gVal);
-      });
       // 옵션 그룹 로드 (구형식 자동 변환)
       optionGroups = [];
       if (product?.options && Array.isArray(product.options) && product.options.length > 0) {
@@ -1611,6 +1697,10 @@
         }
       }
       renderOptionGroups();
+      // 조합 이미지 로드
+      optionImages = product?.optionImages ? { ...product.optionImages } : {};
+      updateComboImgFieldVisibility();
+      if (Object.keys(optionImages).length > 0) generateComboImages();
       document.getElementById('product-msg').textContent = '';
       resetAdminImageField();
       // 기존 이미지 로드 (images[] 배열 우선, 없으면 단일 image 필드)
@@ -1638,10 +1728,9 @@
       document.getElementById('product-modal').classList.remove('open');
       document.body.style.overflow = '';
       optionGroups = [];
-      // 성별 버튼 초기화
-      document.getElementById('p-gender').value = '';
-      document.querySelectorAll('.filter-chip[data-val]').forEach(b =>
-        b.classList.toggle('active', b.dataset.val === ''));
+      optionImages = {};
+      document.getElementById('combo-list').innerHTML = '';
+      document.getElementById('combo-img-field').style.display = 'none';
       // 판매상태 초기화
       document.getElementById('p-stock').value = '';
       document.getElementById('p-soldout').value = 'false';
@@ -1659,7 +1748,6 @@
       const price    = document.getElementById('p-price').value;
       const material = document.getElementById('p-material').value.trim();
       const desc     = document.getElementById('p-desc').value.trim();
-      const gender   = document.getElementById('p-gender').value;
       const stockVal = document.getElementById('p-stock').value;
       const stock    = stockVal === '' ? null : Number(stockVal);
       const soldOut  = document.getElementById('p-soldout').value === 'true';
@@ -1705,12 +1793,12 @@
           price:       Number(price),
           material,
           description: desc,
-          gender,
           stock,                             // null = 무제한
           soldOut: soldOut || stock === 0,   // 품절 여부
           image:       imageUrls[0] || '',
           images:      imageUrls,
           options,
+          optionImages: Object.keys(optionImages).length > 0 ? optionImages : {},
         };
         if (editingProductId) {
           // 품절 → 판매중으로 변경 시 재입고 알림 발송

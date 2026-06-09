@@ -60,13 +60,6 @@
   </div>
 
   <!-- 성별 필터 -->
-  <div class="gender-filter">
-    <button class="gender-btn active" onclick="applyGender(this,'')">전체</button>
-    <span class="gender-deco">✦</span>
-    <button class="gender-btn" onclick="applyGender(this,'women')">여성</button>
-    <span class="gender-deco">✦</span>
-    <button class="gender-btn" onclick="applyGender(this,'men')">남성</button>
-  </div>
 
   <div class="product-section">
     <div class="product-grid" id="product-grid">
@@ -96,7 +89,6 @@
     const db   = getFirestore(app);
 
     let products = [];
-    let currentGender = ``;
     let likedSet = new Set();
     let likeInProgress = new Set();
 
@@ -144,13 +136,6 @@
 
     window.applySort = () => renderGrid();
 
-    window.applyGender = (btn, gender) => {
-      currentGender = gender;
-      document.querySelectorAll('.gender-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderGrid();
-    };
-
     function getSorted(list) {
       const v = document.getElementById('sort-select').value;
       const arr = [...list];
@@ -162,7 +147,7 @@
     }
 
     function renderGrid() {
-      const filtered = currentGender ? products.filter(p => (p.gender || '') === currentGender) : products;
+      const filtered = products;
       const sorted = getSorted(filtered);
       const grid = document.getElementById('product-grid');
       document.getElementById('result-count').textContent = `${sorted.length} items`;

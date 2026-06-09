@@ -55,9 +55,9 @@
     .detail-img-wrap {
       background: #F5F0E8;
       overflow: hidden;
-      aspect-ratio: 1 / 1;
+      max-height: 400px;
     }
-    .detail-img-wrap img { width: 100%; height: 100%; display: block; object-fit: cover; }
+    .detail-img-wrap img { width: 100%; height: 100%; display: block; object-fit: cover; max-height: 400px; }
     .detail-img-placeholder {
       font-family: var(--font-display); font-style: italic;
       font-size: 16px; color: #C8C0B0; letter-spacing: 3px;
@@ -980,8 +980,32 @@
         selectedOpts[label] = { val, price };
         const req = document.getElementById(`option-required-${gi}`);
         if (req) req.classList.remove('show');
-        updateDisplayPrice(); // 가격 실시간 반영
+        updateDisplayPrice();
+        tryUpdateComboImage();
       });
+    }
+
+    function tryUpdateComboImage() {
+      const groups = getOptionGroups().filter(g => g.values && g.values.length > 0);
+      if (groups.length === 0) return;
+      const allSelected = groups.every(g => selectedOpts[g.label || '옵션']);
+      console.log('[combo] selectedOpts:', JSON.stringify(selectedOpts));
+      console.log('[combo] allSelected:', allSelected);
+      if (!allSelected) return;
+      const comboKey = groups.map(g => selectedOpts[g.label || '옵션'].val).join('|');
+      console.log('[combo] comboKey:', comboKey);
+      console.log('[combo] optionImages:', JSON.stringify(product?.optionImages));
+      const url = product?.optionImages?.[comboKey];
+      console.log('[combo] url:', url);
+      if (!url) return;
+      const mainImg = document.getElementById('detail-main-img');
+      if (!mainImg) return;
+      mainImg.style.opacity = '0';
+      mainImg.style.transition = 'opacity 0.25s';
+      setTimeout(() => {
+        mainImg.src = url;
+        mainImg.style.opacity = '1';
+      }, 200);
     }
 
     function checkOptionSelected() {
