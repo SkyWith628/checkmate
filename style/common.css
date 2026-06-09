@@ -1,0 +1,37 @@
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Design tokens ── */
+:root {
+  --cream:        #ffffff;
+  --sand:         #FEFAEF;
+  --gold:         #E8D9B8;
+  --dark:         #1C1A17;
+  --muted:        #8A6A60;
+  --cherry:       #5C3030;
+  --cherry-esp:   #3A2420;
+  --antique-gold: #C9A96E;
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body:    'Noto Serif KR', serif;
+}
+
+body {
+  font-family: var(--font-body);
+  font-weight: 300;
+  color: var(--dark);
+}
+
+/* ── 네비게이션 공통 ── */
+.nav-user-logged { text-decoration: none !important; }
+
+/* ── 장바구니 뱃지 ── */
+.cart-icon-wrap { position: relative; display: flex; align-items: center; }
+.cart-badge {
+  position: absolute; top: -6px; right: -7px;
+  background: var(--cherry); color: #fff;
+  font-size: 9px; font-family: var(--font-body);
+  min-width: 16px; height: 16px; border-radius: 8px;
+  display: none; align-items: center; justify-content: center;
+  padding: 0 3px; pointer-events: none; letter-spacing: 0;
+}
+.cart-badge.show { display: flex; }

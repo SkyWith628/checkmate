@@ -1,0 +1,346 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="picture/cm.png">
+  <title>CHECKMATE ⬦ Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/common.css">
+  <style>
+    body {
+      background: var(--cherry-esp);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 배경 장식선 */
+    .bg-deco-left, .bg-deco-right {
+      position: fixed;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, var(--antique-gold), transparent);
+      opacity: 0.2;
+    }
+    .bg-deco-left  { left: 60px; }
+    .bg-deco-right { right: 60px; }
+
+    .bg-deco-top, .bg-deco-bottom {
+      position: fixed;
+      left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(to right, transparent, var(--antique-gold), transparent);
+      opacity: 0.2;
+    }
+    .bg-deco-top    { top: 60px; }
+    .bg-deco-bottom { bottom: 60px; }
+
+    /* 로그인 카드 */
+    .login-card {
+      background: var(--cream);
+      width: 100%;
+      max-width: 440px;
+      padding: 60px 52px;
+      position: relative;
+      opacity: 0;
+      animation: fadeUp 0.8s ease 0.2s forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 카드 모서리 장식 */
+    .corner {
+      position: absolute;
+      width: 16px;
+      height: 16px;
+      border-color: var(--antique-gold);
+      border-style: solid;
+      opacity: 0.6;
+    }
+    .corner-tl { top: 16px;    left: 16px;  border-width: 1px 0 0 1px; }
+    .corner-tr { top: 16px;    right: 16px; border-width: 1px 1px 0 0; }
+    .corner-bl { bottom: 16px; left: 16px;  border-width: 0 0 1px 1px; }
+    .corner-br { bottom: 16px; right: 16px; border-width: 0 1px 1px 0; }
+
+    /* 헤더 */
+    .card-header { text-align: center; margin-bottom: 44px; }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 300;
+      letter-spacing: 8px;
+      color: var(--dark);
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .admin-badge {
+      display: inline-block;
+      font-size: 9px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--antique-gold);
+      border: 1px solid var(--gold);
+      padding: 4px 12px;
+    }
+
+    .divider {
+      width: 36px;
+      height: 1px;
+      background: var(--gold);
+      margin: 20px auto;
+    }
+
+    /* 폼 */
+    .form-group { margin-bottom: 24px; }
+
+    .form-label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .form-input {
+      width: 100%;
+      border: none;
+      border-bottom: 1px solid var(--gold);
+      background: transparent;
+      padding: 10px 0;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 300;
+      color: var(--dark);
+      outline: none;
+      transition: border-color 0.3s;
+    }
+    .form-input::placeholder { color: var(--gold); font-size: 13px; }
+    .form-input:focus { border-bottom-color: var(--antique-gold); }
+
+    /* 비밀번호 래퍼 */
+    .pw-wrapper { position: relative; }
+    .pw-wrapper .form-input { padding-right: 36px; }
+
+    .btn-pw-toggle {
+      position: absolute;
+      right: 0;
+      bottom: 10px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      color: var(--gold);
+      transition: color 0.3s;
+      line-height: 1;
+    }
+    .btn-pw-toggle:hover { color: var(--antique-gold); }
+    .btn-pw-toggle svg { display: block; width: 18px; height: 18px; }
+
+    /* 에러 메시지 */
+    .error-msg {
+      font-size: 11px;
+      color: var(--cherry);
+      letter-spacing: 1px;
+      margin-top: 8px;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    /* 로그인 버튼 */
+    .btn-login {
+      width: 100%;
+      padding: 16px;
+      background: var(--cherry-esp);
+      color: var(--sand);
+      border: none;
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: background 0.3s;
+      margin-top: 12px;
+    }
+    .btn-login:hover    { background: var(--cherry); }
+    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* 하단 링크 */
+    .card-footer { text-align: center; margin-top: 32px; }
+
+    .back-link {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.3s, border-color 0.3s;
+    }
+    .back-link:hover { color: var(--antique-gold); border-bottom-color: var(--antique-gold); }
+
+    /* 로딩 스피너 */
+    .spinner {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 1px solid rgba(254,250,239,0.4);
+      border-top-color: var(--sand);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 성공 패널 */
+    .success-panel { display: none; text-align: center; padding: 20px 0; }
+    .success-panel.visible { display: block; }
+
+    .success-icon  { font-size: 32px; color: var(--antique-gold); margin-bottom: 16px; }
+    .success-title { font-family: var(--font-display); font-size: 24px; font-style: italic; font-weight: 300; color: var(--dark); margin-bottom: 8px; }
+    .success-sub   { font-size: 11px; letter-spacing: 2px; color: var(--muted); }
+  </style>
+</head>
+<body>
+
+  <div class="bg-deco-left"></div>
+  <div class="bg-deco-right"></div>
+  <div class="bg-deco-top"></div>
+  <div class="bg-deco-bottom"></div>
+
+  <div class="login-card">
+    <div class="corner corner-tl"></div>
+    <div class="corner corner-tr"></div>
+    <div class="corner corner-bl"></div>
+    <div class="corner corner-br"></div>
+
+    <div class="card-header">
+      <span class="logo">CHECKMATE</span>
+      <span class="admin-badge">Admin</span>
+      <div class="divider"></div>
+    </div>
+
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label class="form-label" for="admin-id">이메일</label>
+        <input class="form-input" type="email" id="admin-id" placeholder="이메일을 입력하세요" autocomplete="email" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="admin-pw">비밀번호</label>
+        <div class="pw-wrapper">
+          <input class="form-input" type="password" id="admin-pw" placeholder="비밀번호를 입력하세요" autocomplete="current-password" required>
+          <button type="button" class="btn-pw-toggle" onclick="togglePassword()" aria-label="비밀번호 표시/숨기기">
+            <svg id="icon-eye" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+            <svg id="icon-eye-off" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+        </div>
+        <p class="error-msg" id="error-msg">이메일 또는 비밀번호가 올바르지 않습니다.</p>
+      </div>
+
+      <button class="btn-login" type="submit" id="btn-login">로그인</button>
+    </form>
+
+    <div class="success-panel" id="success-panel">
+      <div class="success-icon">✦</div>
+      <p class="success-title">로그인 성공</p>
+      <p class="success-sub">어드민 페이지로 이동합니다</p>
+    </div>
+
+    <div class="card-footer">
+      <a class="back-link" href="checkmate.html">← 메인 페이지로 돌아가기</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp }                          from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { firebaseConfig } from "./js/firebase-config.js";
+    import { getAuth, signInWithEmailAndPassword }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc }              from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('admin-id').value.trim();
+      const pw    = document.getElementById('admin-pw').value;
+      const btn   = document.getElementById('btn-login');
+      const err   = document.getElementById('error-msg');
+
+      err.classList.remove('visible');
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span>확인 중...';
+
+      try {
+        const { user } = await signInWithEmailAndPassword(auth, email, pw);
+        const snap = await getDoc(doc(db, 'users', user.uid));
+
+        if (!snap.exists() || snap.data().role !== 'admin') {
+          await auth.signOut();
+          throw new Error('no-admin');
+        }
+
+        document.getElementById('login-form').style.display = 'none';
+        document.getElementById('success-panel').classList.add('visible');
+        setTimeout(() => { window.location.href = 'admin.html'; }, 1500);
+
+      } catch (error) {
+        const msg = error.message === 'no-admin'
+          ? '관리자 권한이 없는 계정입니다.'
+          : '이메일 또는 비밀번호가 올바르지 않습니다.';
+        err.textContent = msg;
+        err.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = '로그인';
+        document.getElementById('admin-pw').value = '';
+        document.getElementById('admin-pw').focus();
+      }
+    }
+
+    window.handleLogin = handleLogin;
+
+    function togglePassword() {
+      const pw     = document.getElementById('admin-pw');
+      const eyeOn  = document.getElementById('icon-eye');
+      const eyeOff = document.getElementById('icon-eye-off');
+      if (pw.type === 'password') {
+        pw.type = 'text';
+        eyeOn.style.display  = 'block';
+        eyeOff.style.display = 'none';
+      } else {
+        pw.type = 'password';
+        eyeOn.style.display  = 'none';
+        eyeOff.style.display = 'block';
+      }
+    }
+    window.togglePassword = togglePassword;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const form = document.getElementById('login-form');
+        if (form.style.display !== 'none') form.requestSubmit();
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="picture/cm.png">
+  <title>404 ⬦ CHECKMATE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/common.css">
+  <style>
+    body {
+      background: var(--dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* 배경 장식선 */
+    .deco { position: fixed; background: linear-gradient(to bottom, transparent, var(--antique-gold), transparent); opacity: 0.08; }
+    .deco-l { left: 60px; top: 0; bottom: 0; width: 1px; }
+    .deco-r { right: 60px; top: 0; bottom: 0; width: 1px; }
+    .deco-t { top: 60px; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--antique-gold), transparent); opacity: 0.08; }
+    .deco-b { bottom: 60px; left: 0; right: 0; height: 1px; background: linear-gradient(to right, transparent, var(--antique-gold), transparent); opacity: 0.08; }
+
+    .number {
+      font-family: var(--font-display);
+      font-size: clamp(120px, 20vw, 200px);
+      font-weight: 300;
+      font-style: italic;
+      color: var(--antique-gold);
+      line-height: 1;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.1s forwards;
+    }
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: var(--antique-gold);
+      margin: 24px auto;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.25s forwards;
+    }
+
+    .title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 300;
+      color: var(--sand);
+      letter-spacing: 4px;
+      margin-bottom: 16px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.35s forwards;
+    }
+
+    .desc {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 2px;
+      line-height: 1.8;
+      margin-bottom: 48px;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.45s forwards;
+    }
+
+    .btn-home {
+      display: inline-block;
+      padding: 14px 48px;
+      border: 1px solid var(--antique-gold);
+      color: var(--antique-gold);
+      text-decoration: none;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      transition: background 0.3s, color 0.3s;
+      opacity: 0;
+      animation: fadeUp 0.9s ease 0.55s forwards;
+    }
+    .btn-home:hover { background: var(--antique-gold); color: var(--dark); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="deco deco-l"></div>
+  <div class="deco deco-r"></div>
+  <div class="deco deco-t"></div>
+  <div class="deco deco-b"></div>
+
+  <p class="number">404</p>
+  <div class="divider"></div>
+  <p class="title">페이지를 찾을 수 없습니다</p>
+  <p class="desc">요청하신 페이지가 존재하지 않거나<br>이동되었을 수 있습니다.</p>
+  <a class="btn-home" href="checkmate.html">메인으로 돌아가기</a>
+</body>
+</html>

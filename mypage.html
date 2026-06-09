@@ -1,0 +1,1522 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="picture/cm.png">
+  <title>마이페이지 ⬦ CHECKMATE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/common.css">
+  <style>
+    body { background: var(--sand); min-height: 100vh; display: flex; flex-direction: column; }
+    * { scrollbar-width: none; -ms-overflow-style: none; }
+    *::-webkit-scrollbar { display: none; }
+
+    /* ── 네비게이션 ── */
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 28px 60px; border-bottom: 1px solid var(--gold);
+      background: var(--cream);
+    }
+    .logo {
+      font-family: var(--font-display); font-size: 28px; font-weight: 300;
+      letter-spacing: 8px; color: var(--dark); text-decoration: none;
+    }
+    .nav-back {
+      font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; transition: color 0.3s;
+    }
+    .nav-back:hover { color: var(--cherry); }
+
+    /* ── 탭 레이아웃 ── */
+    .mp-wrap { max-width: 740px; margin: 0 auto; padding: 56px 24px 80px; flex: 1; }
+    .mp-header { margin-bottom: 36px; }
+    .eyebrow { font-size:10px; letter-spacing:4px; text-transform:uppercase; color:var(--antique-gold); margin-bottom:10px; }
+    .page-title { font-family:var(--font-display); font-size:44px; font-weight:300; font-style:italic; color:var(--dark); margin-bottom:6px; line-height:1; }
+    .welcome { font-size:13px; color:var(--muted); letter-spacing:1px; margin-top:8px; }
+    .welcome strong { color:var(--cherry); font-weight:400; }
+
+    .mp-tab-nav {
+      display: flex; border-bottom: 1px solid var(--gold);
+      overflow-x: auto; overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
+      flex-wrap: nowrap;
+    }
+    .mp-tab {
+      font-family: var(--font-body); font-size: 11px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--muted);
+      background: none; border: none; border-bottom: 2px solid transparent;
+      padding: 15px 24px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+      transition: color 0.3s, border-color 0.3s;
+      margin-bottom: -1px;
+    }
+    .mp-tab:hover { color: var(--dark); }
+    .mp-tab.active { color: var(--cherry); border-bottom-color: var(--cherry); }
+
+    .mp-panel { display: none; padding: 40px 0; }
+    .mp-panel.active { display: block; animation: fadeUp 0.35s ease forwards; }
+
+    /* ── 정보 행 ── */
+    .info-list { display:flex; flex-direction:column; }
+    .info-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:18px 0; border-bottom:1px solid var(--gold);
+    }
+    .info-row:last-child { border-bottom:none; }
+    .info-label { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+    .info-value { font-size:13px; color:var(--dark); letter-spacing:1px; }
+
+    /* ── 회원 등급 배지 ── */
+    .grade-badge {
+      display:inline-block; font-size:9px; letter-spacing:3px;
+      text-transform:uppercase; padding:4px 12px; border:1px solid;
+      cursor:pointer; transition:opacity 0.2s;
+    }
+    .grade-badge:hover { opacity:0.75; }
+    .grade-STONE      { border-color:#9A9890; color:#8A8880; }
+    .grade-SILVER     { border-color:#A8A9AD; color:#A8A9AD; background:rgba(168,169,173,0.07); }
+    .grade-GOLD       { border-color:var(--antique-gold); color:var(--antique-gold); background:rgba(201,169,110,0.07); }
+    .grade-WHITEGOLD  { border-color:#B8C8D8; color:#7090A8; background:rgba(184,200,216,0.10); }
+    .grade-DIAMOND    { border-color:#7EC8E3; color:#5BAECF; background:rgba(126,200,227,0.07); }
+
+    /* ── 버튼 ── */
+    .btn-wrap { margin-top:36px; display:flex; gap:12px; }
+    .btn-logout {
+      flex:1; padding:14px; background:var(--dark); color:var(--sand);
+      border:none; font-family:var(--font-body); font-size:11px;
+      letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:background 0.3s;
+    }
+    .btn-logout:hover { background:var(--cherry); }
+    .btn-edit {
+      flex:1; padding:14px; background:transparent; color:var(--dark);
+      border:1px solid var(--gold); font-family:var(--font-body); font-size:11px;
+      letter-spacing:3px; text-transform:uppercase; cursor:pointer;
+      transition:border-color 0.3s,color 0.3s,background 0.3s;
+    }
+    .btn-edit:hover { border-color:var(--antique-gold); color:var(--antique-gold); background:rgba(201,169,110,0.05); }
+
+    /* ── 결제 정보 ── */
+    .pay-list { display:flex; flex-direction:column; }
+    .pay-item {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:16px 0; border-bottom:1px solid var(--gold);
+    }
+    .pay-item:last-of-type { border-bottom:none; }
+    .pay-item-left { display:flex; align-items:center; gap:14px; }
+    .card-brand-chip {
+      width:42px; height:28px; border:1px solid var(--gold);
+      display:flex; align-items:center; justify-content:center;
+      font-size:8px; letter-spacing:1px; color:var(--muted); background:white;
+      text-transform:uppercase; flex-shrink:0;
+    }
+    .card-info { display:flex; flex-direction:column; gap:3px; }
+    .card-nickname { font-size:13px; color:var(--dark); letter-spacing:1px; }
+    .card-number   { font-size:11px; color:var(--muted); letter-spacing:3px; }
+    .btn-card-del {
+      background:none; border:none; cursor:pointer;
+      font-size:18px; color:var(--muted); line-height:1; transition:color 0.2s; padding:0 4px;
+    }
+    .btn-card-del:hover { color:var(--cherry); }
+    .pay-empty {
+      text-align:center; padding:32px 0;
+      font-size:12px; color:var(--muted); letter-spacing:2px;
+    }
+    .btn-add-card {
+      margin-top:20px; width:100%; padding:13px;
+      background:transparent; border:1px dashed var(--gold);
+      font-family:var(--font-body); font-size:11px;
+      letter-spacing:3px; text-transform:uppercase;
+      color:var(--muted); cursor:pointer;
+      transition:border-color 0.3s,color 0.3s;
+    }
+    .btn-add-card:hover { border-color:var(--antique-gold); color:var(--antique-gold); }
+
+    /* ── 쿠폰 ── */
+    .coupon-section-title {
+      font-size:10px; letter-spacing:4px; text-transform:uppercase;
+      color:var(--antique-gold); margin:36px 0 16px;
+    }
+    .coupon-list { display:flex; flex-direction:column; gap:10px; }
+    .coupon-card {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:18px 20px; border:1px solid var(--gold);
+      background:var(--cream); gap:16px;
+    }
+    .coupon-card-left { flex:1; min-width:0; }
+    .coupon-card-code {
+      font-family:monospace; font-size:16px; letter-spacing:3px;
+      color:var(--dark); font-weight:400; margin-bottom:6px;
+    }
+    .coupon-card-desc { font-size:11px; color:var(--muted); letter-spacing:1px; }
+    .coupon-badge {
+      font-size:11px; letter-spacing:1px; padding:4px 12px;
+      border:1px solid var(--antique-gold); color:var(--antique-gold);
+      white-space:nowrap; flex-shrink:0;
+    }
+    .btn-copy-coupon {
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      background:none; border:1px solid var(--sand); color:var(--muted);
+      padding:6px 14px; cursor:pointer; transition:all 0.2s; flex-shrink:0;
+    }
+    .btn-copy-coupon:hover { border-color:var(--dark); color:var(--dark); }
+    .btn-copy-coupon.copied { border-color:#6B9E6B; color:#6B9E6B; }
+    .coupon-empty { font-size:12px; color:var(--muted); letter-spacing:2px; padding:20px 0; text-align:center; }
+    .coupon-input-row { display:flex; gap:8px; margin-bottom:8px; }
+    .coupon-register-input {
+      flex:1; padding:12px 14px; background:transparent;
+      border:1px solid var(--gold); font-family:var(--font-body);
+      font-size:13px; color:var(--dark); outline:none;
+      letter-spacing:2px; transition:border-color 0.3s; text-transform:uppercase;
+    }
+    .coupon-register-input:focus { border-color:var(--antique-gold); }
+    .coupon-register-input::placeholder { color:var(--gold); font-size:12px; text-transform:none; letter-spacing:0; }
+    .btn-coupon-register {
+      padding:12px 20px; background:var(--dark); color:var(--sand);
+      border:none; font-family:var(--font-body); font-size:11px;
+      letter-spacing:3px; text-transform:uppercase; cursor:pointer;
+      transition:background 0.3s; white-space:nowrap;
+    }
+    .btn-coupon-register:hover { background:var(--antique-gold); }
+    .coupon-register-msg { font-size:12px; min-height:16px; margin-bottom:16px; letter-spacing:0.5px; }
+    .coupon-register-msg.success { color:#6B9E6B; }
+    .coupon-register-msg.error   { color:var(--cherry); }
+
+    /* ── 관리자 패널 ── */
+    .admin-panel-box {
+      background: #1C1A17; border: 1px solid #3A2E1E;
+      padding: 40px 52px; max-width: 480px; position: relative;
+    }
+    .admin-card-eye {
+      font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+      color: #C9A96E; margin-bottom: 10px; opacity: 0.7;
+    }
+    .admin-card-title {
+      font-family: var(--font-display); font-size: 22px; font-weight: 300;
+      font-style: italic; color: #E2E2E2; margin-bottom: 8px;
+    }
+    .admin-card-desc {
+      font-size: 12px; color: #666; letter-spacing: 1px; margin-bottom: 28px; line-height: 1.7;
+    }
+    .btn-admin-enter {
+      display: inline-block; padding: 13px 36px;
+      background: transparent; border: 1px solid #C9A96E;
+      font-family: var(--font-body); font-size: 11px;
+      letter-spacing: 3px; text-transform: uppercase;
+      color: #C9A96E; text-decoration: none;
+      transition: background 0.3s, color 0.3s; cursor: pointer;
+    }
+    .btn-admin-enter:hover { background: #C9A96E; color: #1C1A17; }
+
+    /* ── FAQ ── */
+    .faq-item { border-top:1px solid var(--gold); }
+    .faq-item:last-child { border-bottom:1px solid var(--gold); }
+    .faq-question {
+      width:100%; display:flex; justify-content:space-between; align-items:center;
+      padding:22px 0; background:none; border:none; cursor:pointer; text-align:left; gap:20px;
+    }
+    .faq-q-text {
+      font-family:var(--font-display); font-size:17px; font-weight:300;
+      color:var(--dark); letter-spacing:0.5px; line-height:1.4; transition:color 0.3s;
+    }
+    .faq-item.open .faq-q-text { color:var(--cherry); }
+    .faq-icon {
+      flex-shrink:0; width:18px; height:18px;
+      position:relative; display:flex; align-items:center; justify-content:center;
+    }
+    .faq-icon::before, .faq-icon::after {
+      content:''; position:absolute; background:var(--antique-gold); transition:transform 0.35s ease, opacity 0.3s;
+    }
+    .faq-icon::before { width:10px; height:1px; }
+    .faq-icon::after  { width:1px; height:10px; }
+    .faq-item.open .faq-icon::after { transform:rotate(90deg); opacity:0; }
+    .faq-answer { overflow:hidden; max-height:0; transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1); }
+    .faq-item.open .faq-answer { max-height:300px; }
+    .faq-a-text { font-size:13px; line-height:2; color:var(--muted); padding-bottom:24px; padding-right:30px; letter-spacing:0.3px; }
+
+    /* ── 찜한 상품 ── */
+    .liked-cat-tabs {
+      display: flex; gap: 0; margin-bottom: 24px;
+      border-bottom: 1px solid var(--gold);
+    }
+    .liked-cat-btn {
+      font-family: var(--font-body); font-size: 10px; letter-spacing: 3px;
+      text-transform: uppercase; color: var(--muted);
+      background: none; border: none; border-bottom: 2px solid transparent;
+      padding: 12px 18px; cursor: pointer;
+      transition: color 0.3s, border-color 0.3s;
+      margin-bottom: -1px;
+    }
+    .liked-cat-btn:hover { color: var(--dark); }
+    .liked-cat-btn.active { color: var(--cherry); border-bottom-color: var(--cherry); }
+    .liked-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 4px;
+    }
+    .liked-item { cursor: pointer; position: relative; }
+    .liked-item-img {
+      aspect-ratio: 2/3; background: #F5F0E8; overflow: hidden;
+      display: flex; align-items: center; justify-content: center; margin-bottom: 8px;
+    }
+    .liked-item-img img { width: 100%; height: 100%; object-fit: contain; }
+    .liked-item-img span { font-family: var(--font-display); font-style: italic; font-size: 11px; color: #C8C0B0; letter-spacing: 1px; }
+    .liked-item-name { font-family: var(--font-display); font-size: 14px; font-weight: 300; color: var(--dark); margin-bottom: 2px; line-height: 1.3; }
+    .liked-item-price { font-size: 11px; color: var(--antique-gold); letter-spacing: 0.5px; }
+    .liked-unlike {
+      position: absolute; top: 6px; right: 6px;
+      width: 24px; height: 24px;
+      background: rgba(255,255,255,0.85); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.2s; padding: 0;
+    }
+    .liked-item:hover .liked-unlike { opacity: 1; }
+    .liked-empty { text-align: center; padding: 40px 0; font-size: 11px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; }
+
+    /* ── 모달 공통 ── */
+    .modal-overlay {
+      position:fixed; inset:0;
+      background:rgba(28,26,23,0.55); backdrop-filter:blur(2px);
+      z-index:900; display:flex; align-items:center; justify-content:center;
+      opacity:0; visibility:hidden; transition:opacity 0.35s ease,visibility 0.35s ease;
+    }
+    .modal-overlay.open { opacity:1; visibility:visible; }
+    .modal-card {
+      width:100%; max-width:480px; max-height:90vh; overflow-y:auto;
+      background:var(--cream); border:1px solid var(--gold);
+      padding:48px 52px; position:relative;
+      transform:translateY(20px);
+      transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    }
+    .modal-overlay.open .modal-card { transform:translateY(0); }
+    .modal-title {
+      font-family:var(--font-display); font-size:28px; font-weight:300;
+      font-style:italic; color:var(--dark); margin-bottom:32px;
+    }
+    .modal-close {
+      position:absolute; top:20px; right:24px;
+      background:none; border:none; font-size:20px; cursor:pointer;
+      color:var(--muted); line-height:1; transition:color 0.2s;
+    }
+    .modal-close:hover { color:var(--cherry); }
+    .modal-section { margin-bottom:28px; }
+    .modal-section-label {
+      font-size:10px; letter-spacing:3px; text-transform:uppercase;
+      color:var(--antique-gold); margin-bottom:16px;
+    }
+    .modal-field { margin-bottom:16px; }
+    .modal-field label {
+      display:block; font-size:10px; letter-spacing:2px;
+      text-transform:uppercase; color:var(--muted); margin-bottom:8px;
+    }
+    .modal-input {
+      width:100%; padding:12px 14px; background:transparent;
+      border:1px solid var(--gold); font-family:var(--font-body);
+      font-size:13px; color:var(--dark); outline:none;
+      letter-spacing:1px; box-sizing:border-box; transition:border-color 0.3s;
+    }
+    .modal-input:focus { border-color:var(--antique-gold); }
+    .modal-input::placeholder { color:var(--gold); font-size:12px; }
+    .modal-input:disabled { opacity:0.45; cursor:not-allowed; }
+    .modal-select {
+      width:100%; padding:12px 14px; background:var(--cream);
+      border:1px solid var(--gold); font-family:var(--font-body);
+      font-size:13px; color:var(--dark); outline:none;
+      letter-spacing:1px; box-sizing:border-box;
+      cursor:pointer; transition:border-color 0.3s; appearance:none;
+    }
+    .modal-select:focus { border-color:var(--antique-gold); }
+    .pw-toggle {
+      font-size:11px; letter-spacing:2px; color:var(--muted);
+      background:none; border:none; border-bottom:1px solid var(--gold);
+      padding-bottom:2px; cursor:pointer; transition:color 0.3s; text-transform:uppercase;
+    }
+    .pw-toggle:hover { color:var(--cherry); }
+    .pw-section { max-height:0; overflow:hidden; transition:max-height 0.4s ease; margin-top:0; }
+    .pw-section.open { max-height:300px; margin-top:20px; }
+    .modal-divider { width:100%; height:1px; background:var(--gold); margin:24px 0; opacity:0.5; }
+    .modal-actions { display:flex; gap:10px; }
+    .btn-modal-save {
+      flex:1; padding:13px; background:var(--dark); color:var(--sand);
+      border:none; font-family:var(--font-body); font-size:11px;
+      letter-spacing:3px; text-transform:uppercase; cursor:pointer; transition:background 0.3s;
+    }
+    .btn-modal-save:hover { background:var(--cherry); }
+    .btn-modal-save:disabled { opacity:0.5; cursor:not-allowed; }
+    .btn-modal-cancel {
+      flex:1; padding:13px; background:transparent; color:var(--muted);
+      border:1px solid var(--gold); font-family:var(--font-body);
+      font-size:11px; letter-spacing:3px; text-transform:uppercase;
+      cursor:pointer; transition:color 0.3s,border-color 0.3s;
+    }
+    .btn-modal-cancel:hover { color:var(--dark); border-color:var(--dark); }
+    .modal-msg {
+      font-size:12px; letter-spacing:1px; text-align:center;
+      margin-top:14px; min-height:18px; transition:color 0.3s;
+    }
+    .modal-msg.success { color:#6B9E6B; }
+    .modal-msg.error   { color:var(--cherry); }
+
+    /* ── 토스트 ── */
+    .toast {
+      position:fixed; bottom:36px; left:50%;
+      transform:translateX(-50%) translateY(20px);
+      background:var(--dark); color:var(--sand);
+      padding:12px 28px; font-size:12px; letter-spacing:2px;
+      opacity:0; pointer-events:none;
+      transition:opacity 0.3s,transform 0.3s; z-index:1000; white-space:nowrap;
+    }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+    /* ── 로딩 ── */
+    .loading-wrap {
+      display:flex; align-items:center; justify-content:center;
+      padding: 120px 0; color:var(--muted); font-size:12px; letter-spacing:3px;
+    }
+
+    /* ── 푸터 ── */
+    footer {
+      background:var(--dark); color:var(--sand); padding:28px 60px;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .footer-logo {
+      font-family:var(--font-display); font-size:20px; font-weight:300;
+      letter-spacing:6px; color:var(--sand); text-decoration:none;
+    }
+    .footer-text { font-size:11px; color:var(--muted); letter-spacing:2px; }
+
+    /* ── 알림 ── */
+    .notif-tab-wrap { position:relative; display:inline-flex; }
+    .notif-unread-badge {
+      position:absolute; top:8px; right:10px;
+      min-width:16px; height:16px; padding:0 4px;
+      background:var(--cherry); color:#fff;
+      font-size:9px; border-radius:8px;
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-body); letter-spacing:0; pointer-events:none;
+    }
+    .notif-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .notif-header-title { font-size:12px; color:var(--muted); letter-spacing:1px; }
+    .btn-mark-all {
+      font-size:10px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted); background:none; border:none; cursor:pointer;
+      transition:color 0.2s; padding:0;
+    }
+    .btn-mark-all:hover { color:var(--dark); }
+    .notif-item {
+      display:flex; gap:16px; padding:18px 0;
+      border-bottom:1px solid var(--gold); cursor:pointer;
+      transition:opacity 0.2s;
+    }
+    .notif-item:last-child { border-bottom:none; }
+    .notif-item.read { opacity:0.5; }
+    .notif-dot {
+      width:8px; height:8px; border-radius:50%;
+      background:var(--cherry); flex-shrink:0; margin-top:5px;
+      transition:background 0.2s;
+    }
+    .notif-item.read .notif-dot { background:var(--sand); }
+    .notif-body { flex:1; min-width:0; }
+    .notif-title { font-size:13px; color:var(--dark); margin-bottom:4px; letter-spacing:0.5px; }
+    .notif-item.read .notif-title { color:var(--muted); }
+    .notif-message { font-size:12px; color:var(--muted); line-height:1.7; }
+    .notif-date { font-size:10px; color:var(--muted); letter-spacing:1px; margin-top:6px; }
+    .notif-empty { font-size:12px; color:var(--muted); letter-spacing:2px; text-align:center; padding:40px 0; }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── 고객센터 ── */
+    .cs-contact-block {
+      background: var(--cream); border: 1px solid var(--gold);
+      padding: 28px 32px; margin-bottom: 36px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 20px 32px;
+    }
+    .cs-contact-label { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--antique-gold); margin-bottom:8px; }
+    .cs-contact-value { font-size:14px; color:var(--dark); letter-spacing:0.5px; line-height:1.7; }
+    .cs-section-title { font-family:var(--font-display); font-size:22px; font-weight:300; font-style:italic; color:var(--dark); margin-bottom:20px; }
+    .cs-field { margin-bottom:16px; }
+    .cs-field label { display:block; font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--muted); margin-bottom:8px; }
+    .cs-input {
+      width:100%; padding:12px 14px; background:transparent;
+      border:1px solid var(--gold); font-family:var(--font-body);
+      font-size:13px; color:var(--dark); outline:none;
+      letter-spacing:1px; box-sizing:border-box; transition:border-color 0.3s;
+      resize:none;
+    }
+    .cs-input:focus { border-color:var(--antique-gold); }
+    .cs-input::placeholder { color:var(--gold); font-size:12px; }
+    select.cs-input {
+      background: var(--cream) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23A09080' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center;
+      cursor:pointer; appearance:none; padding-right:36px;
+    }
+    .btn-cs-submit {
+      width:100%; padding:14px; background:var(--dark); color:var(--sand);
+      border:none; font-family:var(--font-body); font-size:11px;
+      letter-spacing:3px; text-transform:uppercase; cursor:pointer;
+      transition:background 0.3s; margin-top:4px;
+    }
+    .btn-cs-submit:hover { background:var(--cherry); }
+    .btn-cs-submit:disabled { opacity:0.5; cursor:not-allowed; }
+    .cs-msg { font-size:12px; letter-spacing:1px; text-align:center; margin-top:12px; min-height:18px; }
+    .cs-msg.success { color:#6B9E6B; }
+    .cs-msg.error   { color:var(--cherry); }
+
+    /* ── 내 문의 내역 ── */
+    .cs-history-title { font-family:var(--font-display); font-size:22px; font-weight:300; font-style:italic; color:var(--dark); margin:40px 0 4px; }
+    .cs-history-empty { font-size:12px; color:var(--muted); letter-spacing:2px; text-align:center; padding:28px 0; }
+    .cs-inq-item { border-top:1px solid var(--gold); }
+    .cs-inq-item:last-child { border-bottom:1px solid var(--gold); }
+    .cs-inq-header {
+      display:flex; align-items:center; gap:14px;
+      padding:18px 0; cursor:pointer; user-select:none;
+    }
+    .cs-inq-cat { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--antique-gold); flex-shrink:0; }
+    .cs-inq-preview { font-size:13px; color:var(--dark); flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .cs-inq-date { font-size:11px; color:var(--muted); flex-shrink:0; }
+    .cs-inq-s-접수     { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:var(--antique-gold); flex-shrink:0; }
+    .cs-inq-s-확인중   { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#5BAECF; flex-shrink:0; }
+    .cs-inq-s-답변완료 { font-size:10px; letter-spacing:2px; text-transform:uppercase; color:#6B9E6B; flex-shrink:0; }
+    .cs-inq-arrow { font-size:16px; color:var(--muted); transition:transform 0.3s; flex-shrink:0; }
+    .cs-inq-item.open .cs-inq-arrow { transform:rotate(90deg); }
+    .cs-inq-body { overflow:hidden; max-height:0; transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1); }
+    .cs-inq-item.open .cs-inq-body { max-height:800px; }
+    .cs-inq-text { font-size:13px; color:var(--muted); line-height:2; padding:4px 0 16px; white-space:pre-wrap; }
+    .cs-inq-reply {
+      margin:0 0 20px;
+      padding:16px 20px;
+      background:var(--cream);
+      border-left:3px solid var(--antique-gold);
+    }
+    .cs-inq-reply-label { font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--antique-gold); margin-bottom:8px; }
+    .cs-inq-reply-text { font-size:13px; color:var(--dark); line-height:2; white-space:pre-wrap; }
+    .cs-inq-reply-date { font-size:11px; color:var(--muted); margin-top:6px; }
+    .btn-inq-delete {
+      font-size:11px; letter-spacing:2px; text-transform:uppercase;
+      color:var(--muted); background:none; border:none; cursor:pointer;
+      transition:color 0.2s; padding:0; margin-top:4px;
+    }
+    .btn-inq-delete:hover { color:var(--cherry); }
+
+    /* ── 반응형 (모바일) ── */
+    @media (max-width: 768px) {
+      html, body { overflow-x: hidden; max-width: 100vw; }
+      nav { padding: 16px 20px; }
+      .logo { font-size: 22px; letter-spacing: 4px; }
+      .mp-wrap { padding: 32px 16px 60px; max-width: 100%; }
+      .page-title { font-size: 36px; }
+      .mp-tab { padding: 12px 16px; font-size: 10px; letter-spacing: 2px; }
+      .liked-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .admin-panel-box { padding: 28px 24px; max-width: 100%; }
+      .cs-contact-block { grid-template-columns: 1fr; }
+      .modal-card { padding: 32px 24px; }
+      .info-list, .pay-list, .coupon-list { max-width: 100%; overflow-x: hidden; }
+      footer { padding: 20px; flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="checkmate.html">CHECKMATE</a>
+    <a class="nav-back" href="checkmate.html">← 메인으로</a>
+  </nav>
+
+  <!-- ── 회원정보 수정 모달 ── -->
+  <div class="modal-overlay" id="edit-modal" onclick="handleOverlayClick(event)">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeEditModal()">✕</button>
+      <h2 class="modal-title">회원정보 수정</h2>
+
+      <div class="modal-section">
+        <p class="modal-section-label">기본 정보</p>
+        <div class="modal-field">
+          <label for="edit-name">이름</label>
+          <input class="modal-input" type="text" id="edit-name" placeholder="이름을 입력하세요" autocomplete="name">
+        </div>
+        <div class="modal-field">
+          <label>이메일</label>
+          <input class="modal-input" type="email" id="edit-email" disabled>
+        </div>
+        <div class="modal-field">
+          <label for="edit-gender">성별</label>
+          <select class="modal-input" id="edit-gender" style="appearance:auto;-webkit-appearance:auto;background:#fff;cursor:pointer;">
+            <option value="">선택하세요</option>
+            <option value="male">남성</option>
+            <option value="female">여성</option>
+            <option value="other">선택 안 함</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label for="edit-location">사는곳</label>
+          <input class="modal-input" type="text" id="edit-location" placeholder="예) 서울, 부산, 제주...">
+        </div>
+      </div>
+
+      <div class="modal-divider"></div>
+
+      <div class="modal-section">
+        <button class="pw-toggle" onclick="togglePwSection()" id="pw-toggle-btn">＋ 비밀번호 변경</button>
+        <div class="pw-section" id="pw-section">
+          <div class="modal-field">
+            <label for="edit-pw-current">현재 비밀번호</label>
+            <input class="modal-input" type="password" id="edit-pw-current" placeholder="현재 비밀번호">
+          </div>
+          <div class="modal-field">
+            <label for="edit-pw-new">새 비밀번호</label>
+            <input class="modal-input" type="password" id="edit-pw-new" placeholder="새 비밀번호 (6자 이상)">
+          </div>
+          <div class="modal-field">
+            <label for="edit-pw-confirm">새 비밀번호 확인</label>
+            <input class="modal-input" type="password" id="edit-pw-confirm" placeholder="새 비밀번호 재입력">
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" onclick="closeEditModal()">취소</button>
+        <button class="btn-modal-save" id="btn-save" onclick="saveProfile()">저장</button>
+      </div>
+      <p class="modal-msg" id="modal-msg"></p>
+    </div>
+  </div>
+
+  <!-- ── 카드 추가 모달 ── -->
+  <div class="modal-overlay" id="card-modal" onclick="handleCardOverlayClick(event)">
+    <div class="modal-card" style="max-width:400px;">
+      <button class="modal-close" onclick="closeCardModal()">✕</button>
+      <h2 class="modal-title">결제 수단 추가</h2>
+
+      <div class="modal-section">
+        <div class="modal-field">
+          <label for="card-brand">카드 종류</label>
+          <select class="modal-select" id="card-brand">
+            <option value="VISA">VISA</option>
+            <option value="MC">Mastercard</option>
+            <option value="AMEX">AMEX</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label for="card-last4">카드번호 끝 4자리</label>
+          <input class="modal-input" type="text" id="card-last4" placeholder="예) 1234" maxlength="4" inputmode="numeric">
+        </div>
+        <div class="modal-field">
+          <label for="card-nickname">카드 별명</label>
+          <input class="modal-input" type="text" id="card-nickname" placeholder="예) 내 주력 카드">
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" onclick="closeCardModal()">취소</button>
+        <button class="btn-modal-save" id="btn-card-save" onclick="addCard()">등록</button>
+      </div>
+      <p class="modal-msg" id="card-msg"></p>
+    </div>
+  </div>
+
+  <!-- 토스트 -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ── 메인 영역 ── -->
+  <div class="mp-wrap">
+    <div class="loading-wrap" id="mp-loading">잠시만 기다려 주세요...</div>
+
+    <div id="mp-main" style="display:none;">
+      <div class="mp-header">
+        <p class="eyebrow">My Account</p>
+        <h1 class="page-title">마이페이지</h1>
+        <p class="welcome">안녕하세요, <strong id="mp-welcome-name"></strong>님</p>
+      </div>
+
+      <div class="mp-tab-nav">
+        <button class="mp-tab active" data-tab="info"     onclick="mpSwitchTab('info')">내 정보</button>
+        <button class="mp-tab"        data-tab="payment"  onclick="mpSwitchTab('payment')">결제 정보</button>
+        <button class="mp-tab"        data-tab="wishlist" onclick="mpSwitchTab('wishlist')">찜한 상품</button>
+        <button class="mp-tab"        data-tab="faq"      onclick="mpSwitchTab('faq')">FAQ</button>
+        <button class="mp-tab"        data-tab="cs"      onclick="mpSwitchTab('cs')">고객센터</button>
+        <div class="notif-tab-wrap">
+          <button class="mp-tab" data-tab="notifications" onclick="mpSwitchTab('notifications')">알림</button>
+          <span class="notif-unread-badge" id="notif-badge" style="display:none;"></span>
+        </div>
+        <button class="mp-tab" id="tab-admin" data-tab="admin" onclick="mpSwitchTab('admin')" style="display:none;">관리자 <span id="admin-order-badge" style="display:none;background:var(--cherry);color:white;font-size:9px;padding:1px 6px;border-radius:8px;margin-left:2px;font-family:var(--font-body);letter-spacing:0;"></span></button>
+      </div>
+
+      <!-- 내 정보 패널 -->
+      <div class="mp-panel active" id="panel-info">
+        <div class="info-list">
+          <div class="info-row">
+            <span class="info-label">이름</span>
+            <span class="info-value" id="mp-name"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">이메일</span>
+            <span class="info-value" id="mp-email"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">사는곳</span>
+            <span class="info-value" id="mp-location"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">가입일</span>
+            <span class="info-value" id="mp-date"></span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">성별</span>
+            <span class="info-value" id="mp-gender">-</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">회원 등급</span>
+            <span id="mp-grade"></span>
+          </div>
+        </div>
+        <div class="btn-wrap">
+          <button class="btn-edit" onclick="openEditModal()">회원정보 수정</button>
+          <button class="btn-logout" onclick="doLogout()">로그아웃</button>
+        </div>
+        <div style="display:none;">
+          <p class="coupon-section-title" style="margin-top:32px;">보유 쿠폰</p>
+          <div class="coupon-list" id="coupon-list-info">
+            <p class="coupon-empty">보유 쿠폰이 없습니다</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 결제 정보 패널 -->
+      <div class="mp-panel" id="panel-payment">
+        <div class="pay-list" id="pay-list"></div>
+        <button class="btn-add-card" onclick="openCardModal()">＋ 카드 등록</button>
+
+        <p class="coupon-section-title">쿠폰 등록</p>
+        <div class="coupon-input-row">
+          <input class="coupon-register-input" type="text" id="coupon-register-code" placeholder="쿠폰 코드 입력">
+          <button class="btn-coupon-register" onclick="registerCoupon()">등록</button>
+        </div>
+        <p class="coupon-register-msg" id="coupon-register-msg"></p>
+
+        <p class="coupon-section-title">보유 쿠폰</p>
+        <div class="coupon-list" id="coupon-list">
+          <p class="coupon-empty">보유 쿠폰이 없습니다</p>
+        </div>
+      </div>
+
+      <!-- 찜한 상품 패널 -->
+      <div class="mp-panel" id="panel-wishlist">
+        <div id="liked-grid"><p class="liked-empty">불러오는 중...</p></div>
+      </div>
+
+      <!-- FAQ 패널 -->
+      <div class="mp-panel" id="panel-faq">
+        <div id="faq-list">
+          <p style="font-size:13px;color:var(--muted);letter-spacing:1px;">불러오는 중...</p>
+        </div>
+      </div>
+
+      <!-- 고객센터 패널 -->
+      <div class="mp-panel" id="panel-cs">
+        <div class="cs-contact-block">
+          <div>
+            <p class="cs-contact-label">E-MAIL</p>
+            <p class="cs-contact-value">CHECKAMTE0222@gmail.com</p>
+          </div>
+         
+          <div>
+            <p class="cs-contact-label">전화 문의</p>
+            <p class="cs-contact-value">010-9232-1390</p>
+          </div>
+          
+        
+        </div>
+
+        <h3 class="cs-section-title">문의하기</h3>
+        <div class="cs-field">
+          <label for="cs-category">문의 유형</label>
+          <select class="cs-input" id="cs-category">
+            <option value="주문/배송">주문 · 배송</option>
+            <option value="교환/반품">교환 · 반품</option>
+            <option value="상품 문의">상품 문의</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div class="cs-field">
+          <label for="cs-message">내용</label>
+          <textarea class="cs-input" id="cs-message" rows="5" placeholder="문의 내용을 상세히 적어주세요"></textarea>
+        </div>
+        <button class="btn-cs-submit" id="btn-cs-submit" onclick="submitInquiry()">문의 접수</button>
+        <p class="cs-msg" id="cs-msg"></p>
+
+        <h3 class="cs-history-title">내 문의 내역</h3>
+        <div id="cs-history"></div>
+      </div>
+
+      <!-- 알림 패널 -->
+      <div class="mp-panel" id="panel-notifications">
+        <div class="notif-header">
+          <p class="notif-header-title" id="notif-count-label">알림 0개</p>
+          <button class="btn-mark-all" onclick="markAllNotificationsRead()">모두 읽음</button>
+        </div>
+        <div id="notif-list"><p class="notif-empty">알림이 없습니다</p></div>
+      </div>
+
+      <!-- 관리자 패널 -->
+      <div class="mp-panel" id="panel-admin">
+        <div class="admin-panel-box">
+          <p class="admin-card-eye">Admin Only</p>
+          <h2 class="admin-card-title">관리자 페이지</h2>
+          <p class="admin-card-desc">ㅡㅡ환영합니다 ㅡㅡ</p>
+          <a class="btn-admin-enter" href="admin.html">관리자 페이지 입장</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <a class="footer-logo" href="checkmate.html">CHECKMATE</a>
+    <p class="footer-text">© My Page</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { firebaseConfig } from "./js/firebase-config.js";
+    import {
+      getAuth, onAuthStateChanged, signOut,
+      updateProfile, updatePassword,
+      reauthenticateWithCredential, EmailAuthProvider
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import {
+      getFirestore, doc, getDoc, updateDoc,
+      collection, getDocs, query, orderBy, arrayRemove, arrayUnion
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    /* ── 탭 전환 ── */
+    window.mpSwitchTab = (tab) => {
+      document.querySelectorAll('.mp-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+      document.querySelectorAll('.mp-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + tab));
+      if (tab === 'payment')       loadCoupons();
+      if (tab === 'notifications') loadNotifications();
+    };
+
+    function esc(s) {
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+    function escNl(s) { return esc(s).replace(/\n/g,'<br>'); }
+
+    /* ── 알림 ── */
+    let _notifications = [];
+
+    async function loadNotifications() {
+      const user = auth.currentUser;
+      if (!user) return;
+      const snap = await getDoc(doc(db, 'users', user.uid));
+      _notifications = [...(snap.data()?.notifications || [])].reverse();
+      renderNotifications();
+      updateNotifBadge();
+    }
+
+    function renderNotifications() {
+      const list  = document.getElementById('notif-list');
+      const label = document.getElementById('notif-count-label');
+      if (!list) return;
+      const unread = _notifications.filter(n => !n.isRead).length;
+      label.textContent = `알림 ${_notifications.length}개${unread > 0 ? ` (안읽음 ${unread}개)` : ''}`;
+
+      if (_notifications.length === 0) {
+        list.innerHTML = '<p class="notif-empty">알림이 없습니다</p>';
+        return;
+      }
+      list.innerHTML = _notifications.map((n, i) => {
+        const date = n.createdAt ? new Date(n.createdAt).toLocaleString('ko-KR') : '';
+        return `
+          <div class="notif-item${n.isRead ? ' read' : ''}" onclick="markNotificationRead(${i})">
+            <div class="notif-dot"></div>
+            <div class="notif-body">
+              <p class="notif-title">${esc(n.title || '')}</p>
+              ${n.message ? `<p class="notif-message">${esc(n.message)}</p>` : ''}
+              <p class="notif-date">${date}</p>
+            </div>
+            <button class="btn-inq-delete" onclick="event.stopPropagation();deleteNotification(${i})" title="삭제">✕</button>
+          </div>`;
+      }).join('');
+    }
+
+    function updateNotifBadge() {
+      const badge  = document.getElementById('notif-badge');
+      if (!badge) return;
+      const unread = _notifications.filter(n => !n.isRead).length;
+      if (unread > 0) {
+        badge.textContent  = unread > 9 ? '9+' : unread;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    window.markNotificationRead = async (idx) => {
+      const user = auth.currentUser;
+      if (!user || _notifications[idx]?.isRead) return;
+      _notifications[idx].isRead = true;
+      const reversed = [..._notifications].reverse();
+      try {
+        await updateDoc(doc(db, 'users', user.uid), { notifications: reversed });
+        renderNotifications();
+        updateNotifBadge();
+      } catch {}
+    };
+
+    window.markAllNotificationsRead = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      _notifications = _notifications.map(n => ({ ...n, isRead: true }));
+      const reversed = [..._notifications].reverse();
+      try {
+        await updateDoc(doc(db, 'users', user.uid), { notifications: reversed });
+        renderNotifications();
+        updateNotifBadge();
+      } catch {}
+    };
+
+    window.deleteNotification = async (idx) => {
+      const user = auth.currentUser;
+      if (!user) return;
+      _notifications.splice(idx, 1);
+      const reversed = [..._notifications].reverse();
+      try {
+        await updateDoc(doc(db, 'users', user.uid), { notifications: reversed });
+        renderNotifications();
+        updateNotifBadge();
+      } catch { showToast('삭제에 실패했습니다.'); }
+    };
+
+    /* ── 쿠폰 ── */
+    function renderCollectedCoupons(coupons) {
+      const html = !coupons || coupons.length === 0
+        ? '<p class="coupon-empty">보유 쿠폰이 없습니다</p>'
+        : coupons.map(c => {
+        const discountLabel = c.discountType === 'percent'
+          ? `${c.discountValue}% 할인`
+          : `${Number(c.discountValue).toLocaleString('ko-KR')}원 할인`;
+        const minLabel = c.minAmount > 0
+          ? `${Number(c.minAmount).toLocaleString('ko-KR')}원 이상 주문 시`
+          : '제한 없음';
+        return `
+          <div class="coupon-card">
+            <div class="coupon-card-left">
+              ${c.name ? `<p style="font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--antique-gold);margin-bottom:4px;">${c.name}</p>` : ''}
+              <p class="coupon-card-desc">${minLabel}</p>
+            </div>
+            <span class="coupon-badge">${discountLabel}</span>
+            <button class="btn-copy-coupon" id="copy-${c.code}" onclick="copyCoupon('${c.code}')">복사</button>
+            <button class="btn-inq-delete" onclick="removeCouponFromWallet('${c.code}')" title="삭제">✕</button>
+          </div>`;
+      }).join('');
+      const c1 = document.getElementById('coupon-list');
+      const c2 = document.getElementById('coupon-list-info');
+      if (c1) c1.innerHTML = html;
+      if (c2) c2.innerHTML = html;
+    }
+
+    async function loadCoupons() {
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        const [userSnap, couponSnap] = await Promise.all([
+          getDoc(doc(db, 'users', user.uid)),
+          getDoc(doc(db, 'products', '_coupons')),
+        ]);
+        const collected   = userSnap.data()?.collectedCoupons || [];
+        const activeCodes = new Set(
+          (couponSnap.data()?.list || []).filter(c => c.isActive !== false).map(c => c.code)
+        );
+        renderCollectedCoupons(collected.filter(c => activeCodes.has(c.code)));
+      } catch {
+        renderCollectedCoupons([]);
+      }
+    }
+
+    window.registerCoupon = async () => {
+      const user  = auth.currentUser;
+      if (!user) return;
+      const code  = document.getElementById('coupon-register-code').value.trim().toUpperCase();
+      const msgEl = document.getElementById('coupon-register-msg');
+      if (!code) { msgEl.textContent = '쿠폰 코드를 입력해 주세요.'; msgEl.className = 'coupon-register-msg error'; return; }
+
+      msgEl.textContent = '확인 중...'; msgEl.className = 'coupon-register-msg';
+      try {
+        // 유효한 쿠폰인지 확인
+        const couponSnap = await getDoc(doc(db, 'products', '_coupons'));
+        const couponList = couponSnap.exists() ? (couponSnap.data().list || []) : [];
+        const found = couponList.find(c => c.code === code && c.isActive !== false);
+        if (!found) { msgEl.textContent = '유효하지 않은 쿠폰 코드입니다.'; msgEl.className = 'coupon-register-msg error'; return; }
+
+        // 이미 보유 중인지 확인
+        const userSnap = await getDoc(doc(db, 'users', user.uid));
+        const collected = userSnap.data()?.collectedCoupons || [];
+        if (collected.find(c => c.code === code)) {
+          msgEl.textContent = '이미 등록된 쿠폰입니다.'; msgEl.className = 'coupon-register-msg error'; return;
+        }
+
+        // 저장
+        const newEntry = {
+          name:         found.name || '',
+          code:         found.code,
+          discountType: found.discountType,
+          discountValue:found.discountValue,
+          minAmount:    found.minAmount || 0,
+          collectedAt:  new Date().toISOString(),
+        };
+        await updateDoc(doc(db, 'users', user.uid), { collectedCoupons: arrayUnion(newEntry) });
+        document.getElementById('coupon-register-code').value = '';
+        msgEl.textContent = '쿠폰이 등록되었습니다 ✓'; msgEl.className = 'coupon-register-msg success';
+        loadCoupons();
+      } catch (err) {
+        msgEl.textContent = '오류가 발생했습니다.'; msgEl.className = 'coupon-register-msg error';
+      }
+    };
+
+    window.removeCouponFromWallet = async (code) => {
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        const userRef  = doc(db, 'users', user.uid);
+        const snap     = await getDoc(userRef);
+        const filtered = (snap.data()?.collectedCoupons || []).filter(c => c.code !== code);
+        await updateDoc(userRef, { collectedCoupons: filtered });
+        loadCoupons();
+      } catch { showToast('삭제에 실패했습니다.'); }
+    };
+
+    window.copyCoupon = (code) => {
+      navigator.clipboard.writeText(code).then(() => {
+        const btn = document.getElementById(`copy-${code}`);
+        if (!btn) return;
+        btn.textContent = '복사됨 ✓'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = '복사'; btn.classList.remove('copied'); }, 2000);
+      });
+    };
+
+    /* ── 등급 헬퍼 ── */
+    const GRADE_LABEL = {
+      STONE: 'Stone', SILVER: 'Silver', GOLD: 'Gold',
+      WHITEGOLD: 'White Gold', DIAMOND: 'Diamond',
+    };
+    function gradeHTML(grade) {
+      const g = grade || 'STONE';
+      return `<a class="grade-badge grade-${g}" href="grade.html" style="text-decoration:none;">${GRADE_LABEL[g] || g}</a>`;
+    }
+
+    /* ── 결제 카드 렌더 ── */
+    function renderCards(cards) {
+      const list = document.getElementById('pay-list');
+      if (!list) return;
+      if (!cards || cards.length === 0) {
+        list.innerHTML = '<p class="pay-empty">등록된 결제 수단이 없습니다</p>';
+        return;
+      }
+      list.innerHTML = cards.map((c, i) => `
+        <div class="pay-item">
+          <div class="pay-item-left">
+            <div class="card-brand-chip">${c.brand || '카드'}</div>
+            <div class="card-info">
+              <span class="card-nickname">${c.nickname || '내 카드'}</span>
+              <span class="card-number">•••• •••• •••• ${c.last4 || '????'}</span>
+            </div>
+          </div>
+          <button class="btn-card-del" onclick="deleteCard(${i})" title="삭제">×</button>
+        </div>
+      `).join('');
+    }
+
+    /* ── 페이지 로드 ── */
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = 'login.html'; return; }
+
+      try {
+        try {
+          const banned = await getDoc(doc(db, 'banned_users', user.uid));
+          if (banned.exists()) { await signOut(auth); window.location.href = 'login.html'; return; }
+        } catch {}
+
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        const data = snap.exists() ? snap.data() : {};
+
+        const name     = data.name     || user.displayName || '-';
+        const email    = data.email    || user.email        || '-';
+        const role     = data.role     || 'user';
+        const grade    = data.grade    || 'STONE';
+        const location = data.location || '-';
+        const genderMap = { male: '남성', female: '여성', other: '선택 안 함' };
+        const gender   = genderMap[data.gender] || '-';
+        const cards    = data.cards    || [];
+        const joinDate = data.createdAt
+          ? new Date(data.createdAt.seconds * 1000).toLocaleDateString('ko-KR')
+          : '-';
+
+        // 로딩 숨기고 메인 표시
+        document.getElementById('mp-loading').style.display = 'none';
+        document.getElementById('mp-main').style.display = '';
+
+        document.getElementById('mp-welcome-name').textContent = name;
+        document.getElementById('mp-name').textContent         = name;
+        document.getElementById('mp-email').textContent        = email;
+        document.getElementById('mp-gender').textContent       = gender;
+        document.getElementById('mp-location').textContent     = location;
+        document.getElementById('mp-date').textContent         = joinDate;
+        document.getElementById('mp-grade').innerHTML          = gradeHTML(grade);
+
+        renderCards(cards);
+        loadCoupons();
+        _notifications = [...(data.notifications || [])].reverse();
+        updateNotifBadge();
+        loadLikedProducts(data.likedProducts || [], user.uid);
+        _myInquiries = [...(data.inquiries || [])].reverse();
+        renderMyInquiries();
+
+        if (role === 'admin') {
+          document.getElementById('tab-admin').style.display = '';
+          // 미읽은 주문 알림 뱃지
+          try {
+            const notifSnap = await getDocs(collection(db, 'admin_notifications'));
+            const unread = notifSnap.docs.filter(d => d.data().isRead === false).length;
+            const badge = document.getElementById('admin-order-badge');
+            if (badge && unread > 0) {
+              badge.textContent = unread;
+              badge.style.display = 'inline';
+            }
+          } catch {}
+        }
+
+        document.getElementById('edit-name').value     = name === '-' ? '' : name;
+        document.getElementById('edit-email').value    = email;
+        document.getElementById('edit-gender').value   = data.gender || '';
+        document.getElementById('edit-location').value = location === '-' ? '' : location;
+
+      } catch (err) {
+        console.error('마이페이지 로드 오류:', err);
+        document.getElementById('mp-loading').textContent = '정보를 불러오지 못했습니다. 새로고침 해주세요.';
+      }
+    });
+
+    /* ── 로그아웃 ── */
+    window.doLogout = async () => {
+      await signOut(auth);
+      window.location.href = 'checkmate.html';
+    };
+
+    /* ── 회원정보 수정 모달 ── */
+    window.openEditModal = async () => {
+      setModalMsg('', '');
+      clearPwFields();
+      const user = auth.currentUser;
+      if (user) {
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          const d = snap.exists() ? snap.data() : {};
+          document.getElementById('edit-name').value     = d.name || '';
+          document.getElementById('edit-email').value    = d.email || user.email || '';
+          document.getElementById('edit-gender').value   = d.gender || '';
+          document.getElementById('edit-location').value = d.location || '';
+        } catch {}
+      }
+      document.getElementById('edit-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+    window.closeEditModal = () => {
+      document.getElementById('edit-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    };
+    window.handleOverlayClick = (e) => {
+      if (e.target === document.getElementById('edit-modal')) closeEditModal();
+    };
+    window.togglePwSection = () => {
+      const sec = document.getElementById('pw-section');
+      const btn = document.getElementById('pw-toggle-btn');
+      const isOpen = sec.classList.toggle('open');
+      btn.textContent = isOpen ? '－ 비밀번호 변경 취소' : '＋ 비밀번호 변경';
+      if (!isOpen) clearPwFields();
+    };
+    function clearPwFields() {
+      ['edit-pw-current','edit-pw-new','edit-pw-confirm']
+        .forEach(id => { document.getElementById(id).value = ''; });
+      document.getElementById('pw-section').classList.remove('open');
+      document.getElementById('pw-toggle-btn').textContent = '＋ 비밀번호 변경';
+    }
+    function setModalMsg(text, type) {
+      const el = document.getElementById('modal-msg');
+      el.textContent = text;
+      el.className = 'modal-msg' + (type ? ' ' + type : '');
+    }
+
+    window.saveProfile = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const newName   = document.getElementById('edit-name').value.trim();
+      const newGender = document.getElementById('edit-gender').value;
+      const newLoc    = document.getElementById('edit-location').value.trim();
+      const pwCurrent = document.getElementById('edit-pw-current').value;
+      const pwNew     = document.getElementById('edit-pw-new').value;
+      const pwConfirm = document.getElementById('edit-pw-confirm').value;
+      const pwOpen    = document.getElementById('pw-section').classList.contains('open');
+
+      if (!newName) { setModalMsg('이름을 입력해 주세요.', 'error'); return; }
+      if (pwOpen) {
+        if (!pwCurrent)        { setModalMsg('현재 비밀번호를 입력해 주세요.', 'error'); return; }
+        if (pwNew.length < 6)  { setModalMsg('새 비밀번호는 6자 이상이어야 합니다.', 'error'); return; }
+        if (pwNew !== pwConfirm) { setModalMsg('새 비밀번호가 일치하지 않습니다.', 'error'); return; }
+      }
+
+      const saveBtn = document.getElementById('btn-save');
+      saveBtn.disabled = true;
+      setModalMsg('저장 중...', '');
+
+      try {
+        await updateProfile(user, { displayName: newName });
+        await updateDoc(doc(db, 'users', user.uid), { name: newName, gender: newGender || '', location: newLoc || '' });
+
+        if (pwOpen && pwCurrent && pwNew) {
+          const cred = EmailAuthProvider.credential(user.email, pwCurrent);
+          await reauthenticateWithCredential(user, cred);
+          await updatePassword(user, pwNew);
+        }
+
+        const gMap = { male: '남성', female: '여성', other: '선택 안 함' };
+        document.getElementById('mp-welcome-name').textContent = newName;
+        document.getElementById('mp-name').textContent         = newName;
+        document.getElementById('mp-gender').textContent       = gMap[newGender] || '-';
+        document.getElementById('mp-location').textContent     = newLoc || '-';
+
+        closeEditModal();
+        showToast('회원정보가 수정되었습니다 ✓');
+      } catch (err) {
+        const msgs = {
+          'auth/wrong-password':        '현재 비밀번호가 올바르지 않습니다.',
+          'auth/invalid-credential':    '현재 비밀번호가 올바르지 않습니다.',
+          'auth/weak-password':         '비밀번호가 너무 약합니다.',
+          'auth/requires-recent-login': '보안을 위해 다시 로그인 후 시도해 주세요.',
+        };
+        setModalMsg(msgs[err.code] || '오류가 발생했습니다. 다시 시도해 주세요.', 'error');
+      } finally {
+        saveBtn.disabled = false;
+      }
+    };
+
+    /* ── 결제 카드 모달 ── */
+    window.openCardModal = () => {
+      document.getElementById('card-last4').value     = '';
+      document.getElementById('card-nickname').value  = '';
+      document.getElementById('card-brand').value     = 'VISA';
+      document.getElementById('card-msg').textContent = '';
+      document.getElementById('card-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    };
+    window.closeCardModal = () => {
+      document.getElementById('card-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    };
+    window.handleCardOverlayClick = (e) => {
+      if (e.target === document.getElementById('card-modal')) closeCardModal();
+    };
+
+    window.addCard = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const brand    = document.getElementById('card-brand').value.trim();
+      const last4    = document.getElementById('card-last4').value.trim();
+      const nickname = document.getElementById('card-nickname').value.trim();
+      const msgEl    = document.getElementById('card-msg');
+
+      if (!/^\d{4}$/.test(last4)) {
+        msgEl.textContent = '카드번호 끝 4자리를 숫자로 입력해 주세요.';
+        msgEl.className = 'modal-msg error'; return;
+      }
+      if (!nickname) {
+        msgEl.textContent = '카드 별명을 입력해 주세요.';
+        msgEl.className = 'modal-msg error'; return;
+      }
+
+      const saveBtn = document.getElementById('btn-card-save');
+      saveBtn.disabled = true;
+      msgEl.textContent = '등록 중...';
+      msgEl.className = 'modal-msg';
+
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        const existing = (snap.exists() && snap.data().cards) ? snap.data().cards : [];
+        const newCards = [...existing, { brand, last4, nickname }];
+        await updateDoc(doc(db, 'users', user.uid), { cards: newCards });
+        renderCards(newCards);
+        closeCardModal();
+        showToast('결제 수단이 등록되었습니다 ✓');
+      } catch {
+        msgEl.textContent = '등록에 실패했습니다. 다시 시도해 주세요.';
+        msgEl.className = 'modal-msg error';
+      } finally {
+        saveBtn.disabled = false;
+      }
+    };
+
+    window.deleteCard = async (index) => {
+      const user = auth.currentUser;
+      if (!user) return;
+      if (!confirm('이 결제 수단을 삭제하시겠습니까?')) return;
+      try {
+        const snap = await getDoc(doc(db, 'users', user.uid));
+        const existing = (snap.exists() && snap.data().cards) ? snap.data().cards : [];
+        const newCards = existing.filter((_, i) => i !== index);
+        await updateDoc(doc(db, 'users', user.uid), { cards: newCards });
+        renderCards(newCards);
+        showToast('결제 수단이 삭제되었습니다');
+      } catch {
+        showToast('삭제에 실패했습니다.');
+      }
+    };
+
+    /* ── 찜한 상품 ── */
+    const CAT_LABEL_KR = { pendant: 'Pendant', ring: 'Ring', earring: 'Earring', bracelet: 'Bracelet' };
+    let _likedAllProds = [];
+    let _likedUid = '';
+
+    async function loadLikedProducts(likedIds, uid) {
+      _likedUid = uid;
+
+      if (!likedIds || likedIds.length === 0) {
+        document.getElementById('liked-grid').innerHTML = '<p class="liked-empty">찜한 상품이 없습니다</p>';
+        return;
+      }
+
+      try {
+        const snaps = await Promise.all(likedIds.map(id => getDoc(doc(db, 'products', id))));
+        _likedAllProds = snaps.filter(s => s.exists()).map(s => ({ id: s.id, ...s.data() }));
+
+        if (_likedAllProds.length === 0) {
+          document.getElementById('liked-grid').innerHTML = '<p class="liked-empty">찜한 상품이 없습니다</p>';
+          return;
+        }
+
+        const cats = ['', ...new Set(_likedAllProds.map(p => p.category).filter(Boolean))];
+        const tabsHtml = `<div class="liked-cat-tabs" id="liked-cat-tabs">${cats.map(c =>
+          `<button class="liked-cat-btn${c === '' ? ' active' : ''}" data-cat="${c}" onclick="filterLikedCat(this)">${c === '' ? '전체' : (CAT_LABEL_KR[c] || c)}</button>`
+        ).join('')}</div>`;
+        document.getElementById('liked-grid').insertAdjacentHTML('beforebegin', tabsHtml);
+
+        renderLikedGrid('');
+      } catch {
+        document.getElementById('liked-grid').innerHTML = '<p class="liked-empty">불러오지 못했습니다</p>';
+      }
+    }
+
+    window.filterLikedCat = (btn) => {
+      document.querySelectorAll('.liked-cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderLikedGrid(btn.dataset.cat);
+    };
+
+    function renderLikedGrid(cat) {
+      const grid = document.getElementById('liked-grid');
+      if (!grid) return;
+      const prods = cat ? _likedAllProds.filter(p => p.category === cat) : _likedAllProds;
+
+      if (prods.length === 0) {
+        grid.innerHTML = '<p class="liked-empty">해당 카테고리에 찜한 상품이 없습니다</p>';
+        return;
+      }
+
+      grid.innerHTML = `<div class="liked-grid">${prods.map(p => `
+        <div class="liked-item" onclick="location.href='product.html?id=${p.id}'">
+          <div class="liked-item-img">
+            ${p.image ? `<img src="${p.image}" alt="${p.name}">` : `<span>${CAT_LABEL_KR[p.category] || '✦'}</span>`}
+          </div>
+          <button class="liked-unlike" onclick="event.stopPropagation();unlikeProduct('${p.id}','${_likedUid}')" title="찜 해제">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="#C0392B" stroke="#C0392B" stroke-width="1.5">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+          <p class="liked-item-name">${p.name || '-'}</p>
+          <p class="liked-item-price">${p.price ? Number(p.price).toLocaleString('ko-KR') + '원' : ''}</p>
+        </div>`).join('')}</div>`;
+    }
+
+    window.unlikeProduct = async (productId, uid) => {
+      try {
+        await updateDoc(doc(db, 'users', uid), { likedProducts: arrayRemove(productId) });
+        _likedAllProds = _likedAllProds.filter(p => p.id !== productId);
+
+        const activeBtn = document.querySelector('.liked-cat-btn.active');
+        const currentCat = activeBtn ? activeBtn.dataset.cat : '';
+        const cats = ['', ...new Set(_likedAllProds.map(p => p.category).filter(Boolean))];
+
+        const tabsEl = document.getElementById('liked-cat-tabs');
+        if (tabsEl) {
+          tabsEl.innerHTML = cats.map(c =>
+            `<button class="liked-cat-btn${c === currentCat ? ' active' : ''}" data-cat="${c}" onclick="filterLikedCat(this)">${c === '' ? '전체' : (CAT_LABEL_KR[c] || c)}</button>`
+          ).join('');
+        }
+
+        const fallbackCat = cats.includes(currentCat) ? currentCat : '';
+        renderLikedGrid(fallbackCat);
+      } catch { showToast('오류가 발생했습니다'); }
+    };
+
+    /* ── 토스트 ── */
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closeEditModal(); closeCardModal(); }
+    });
+
+    /* ── 내 문의 내역 ── */
+    let _myInquiries = [];
+
+    function renderMyInquiries() {
+      const container = document.getElementById('cs-history');
+      if (!container) return;
+      const visible = _myInquiries.filter(inq => !inq.deletedByUser);
+      if (visible.length === 0) {
+        container.innerHTML = '<p class="cs-history-empty">접수된 문의가 없습니다.</p>';
+        return;
+      }
+      container.innerHTML = visible.map((inq, i) => {
+        const date    = inq.createdAt ? new Date(inq.createdAt).toLocaleDateString('ko-KR') : '-';
+        const status  = inq.status || '접수';
+        const preview = (inq.message || '').replace(/\n/g, ' ');
+        return `
+          <div class="cs-inq-item" id="cs-inq-${i}">
+            <div class="cs-inq-header" onclick="toggleInqItem(${i})">
+              <span class="cs-inq-cat">${inq.category || ''}</span>
+              <span class="cs-inq-preview">${preview}</span>
+              <span class="cs-inq-date">${date}</span>
+              <span class="cs-inq-s-${status}">${status}</span>
+              <span class="cs-inq-arrow">›</span>
+            </div>
+            <div class="cs-inq-body">
+              <p class="cs-inq-text">${escNl(inq.message || '')}</p>
+              ${inq.reply ? `
+              <div class="cs-inq-reply">
+                <p class="cs-inq-reply-label">관리자 답변</p>
+                <p class="cs-inq-reply-text">${escNl(inq.reply || '')}</p>
+                ${inq.repliedAt ? `<p class="cs-inq-reply-date">${new Date(inq.repliedAt).toLocaleString('ko-KR')}</p>` : ''}
+              </div>` : ''}
+              <button class="btn-inq-delete" onclick="event.stopPropagation();deleteMyInquiry('${inq.id}')">✕ 삭제</button>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    window.toggleInqItem = (i) => {
+      document.getElementById(`cs-inq-${i}`)?.classList.toggle('open');
+    };
+
+    window.deleteMyInquiry = async (inquiryId) => {
+      if (!confirm('이 문의를 삭제하시겠습니까?')) return;
+      const user = auth.currentUser;
+      if (!user) return;
+      try {
+        const userRef = doc(db, 'users', user.uid);
+        const snap    = await getDoc(userRef);
+        const updated = (snap.data()?.inquiries || []).map(inq =>
+          inq.id === inquiryId ? { ...inq, deletedByUser: true } : inq
+        );
+        await updateDoc(userRef, { inquiries: updated });
+        const inq = _myInquiries.find(i => i.id === inquiryId);
+        if (inq) inq.deletedByUser = true;
+        renderMyInquiries();
+      } catch { showToast('삭제에 실패했습니다.'); }
+    };
+
+    /* ── 고객센터 문의 ── */
+    window.submitInquiry = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      const category = document.getElementById('cs-category').value;
+      const message  = document.getElementById('cs-message').value.trim();
+      const msgEl    = document.getElementById('cs-msg');
+
+      if (!message) { msgEl.textContent = '내용을 입력해 주세요.'; msgEl.className = 'cs-msg error'; return; }
+
+      const btn = document.getElementById('btn-cs-submit');
+      btn.disabled = true;
+      msgEl.textContent = '접수 중...';
+      msgEl.className = 'cs-msg';
+
+      try {
+        const inquiry = {
+          id:        Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          category,
+          message,
+          status:    '접수',
+          createdAt: new Date().toISOString(),
+        };
+        await updateDoc(doc(db, 'users', user.uid), {
+          inquiries: arrayUnion(inquiry),
+        });
+        document.getElementById('cs-message').value = '';
+        msgEl.textContent = '문의가 접수되었습니다. 빠른 시일 내에 답변 드리겠습니다 ✓';
+        msgEl.className = 'cs-msg success';
+        _myInquiries.unshift(inquiry);
+        renderMyInquiries();
+      } catch (err) {
+        console.error('[문의 접수 오류]', err);
+        msgEl.textContent = `오류: ${err.code || err.message || String(err)}`;
+        msgEl.className = 'cs-msg error';
+      } finally {
+        btn.disabled = false;
+      }
+    };
+
+    /* ── FAQ ── */
+    window.toggleFaq = (btn) => {
+      const item = btn.closest('.faq-item');
+      const isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+      if (!isOpen) item.classList.add('open');
+    };
+
+    (async () => {
+      try {
+        let faqs = [];
+        try {
+          const q    = query(collection(db, 'faqs'), orderBy('order', 'asc'));
+          const snap = await getDocs(q);
+          faqs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        } catch {
+          const snap = await getDocs(collection(db, 'faqs'));
+          faqs = snap.docs.map(d => ({ id: d.id, ...d.data() }))
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+        }
+
+        const container = document.getElementById('faq-list');
+        if (!faqs.length) {
+          container.innerHTML = '<p style="font-size:13px;color:var(--muted);letter-spacing:1px;">등록된 FAQ가 없습니다.</p>';
+          return;
+        }
+        container.innerHTML = faqs.map(f => `
+          <div class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span class="faq-q-text">${f.question || ''}</span>
+              <span class="faq-icon"></span>
+            </button>
+            <div class="faq-answer">
+              <p class="faq-a-text">${(f.answer || '').replace(/\n/g, '<br>')}</p>
+            </div>
+          </div>
+        `).join('');
+      } catch {
+        document.getElementById('faq-list').innerHTML =
+          '<p style="font-size:13px;color:var(--muted);">FAQ를 불러오지 못했습니다.</p>';
+      }
+    })();
+  </script>
+
+</body>
+</html>

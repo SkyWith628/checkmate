@@ -1,0 +1,261 @@
+﻿                                                        <!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="picture/cm.png">
+  <title>등급 안내 ⬦ CHECKMATE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+KR:wght@300;400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style/common.css">
+  <style>
+    body { background: var(--sand); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* ── 네비게이션 ── */
+    nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 28px 60px; border-bottom: 1px solid var(--gold);
+      background: var(--cream);
+    }
+    .logo {
+      font-family: var(--font-display); font-size: 28px; font-weight: 300;
+      letter-spacing: 8px; color: var(--dark); text-decoration: none;
+    }
+    .nav-back {
+      font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); text-decoration: none; transition: color 0.3s;
+    }
+    .nav-back:hover { color: var(--cherry); }
+
+    /* ── 헤더 ── */
+    .page-header {
+      text-align: center;
+      padding: 72px 60px 56px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.1s forwards;
+    }
+    .page-eyebrow {
+      font-size: 10px; letter-spacing: 5px; text-transform: uppercase;
+      color: var(--antique-gold); margin-bottom: 16px;
+    }
+    .page-title {
+      font-family: var(--font-display); font-size: 52px; font-weight: 300;
+      font-style: italic; color: var(--dark); margin-bottom: 16px;
+    }
+    .page-desc {
+      font-size: 13px; color: var(--muted); letter-spacing: 1px; line-height: 1.9;
+    }
+
+    /* ── 등급 카드 그리드 영역 ── */
+    .grades-outer {
+      flex: 1;
+      padding: 0 60px 80px;
+      opacity: 0;
+      animation: fadeUp 0.7s ease 0.25s forwards;
+    }
+
+    .grades-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 0;
+      padding-top: 18px; /* 내 등급 태그가 잘리지 않도록 공간 확보 */
+    }
+
+    /* ── 등급 카드 ── */
+    .grade-card {
+      background: var(--cream);
+      border: 1px solid var(--gold);
+      border-right: none;
+      display: flex;
+      flex-direction: column;
+      padding: 36px 28px 32px;
+      position: relative;
+      transition: background 0.3s;
+    }
+    .grade-card:last-child { border-right: 1px solid var(--gold); }
+
+    /* 현재 등급 강조 */
+    .grade-card.current {
+      background: white;
+      z-index: 1;
+      box-shadow: 0 0 0 1px var(--antique-gold);
+      border-color: var(--antique-gold);
+    }
+    .grade-card.current + .grade-card { border-left: none; }
+
+    .current-mark {
+      display: none;
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+      background: var(--antique-gold);
+      color: var(--cream);
+      font-size: 8px; letter-spacing: 2px; text-transform: uppercase;
+      padding: 3px 10px;
+      white-space: nowrap;
+    }
+    .grade-card.current .current-mark { display: block; }
+
+    /* ── 카드 상단 ── */
+    .card-top { margin-bottom: 20px; }
+    .grade-badge {
+      display: inline-block; font-size: 9px; letter-spacing: 3px;
+      text-transform: uppercase; padding: 4px 12px; border: 1px solid;
+      margin-bottom: 14px;
+    }
+    .grade-name {
+      font-family: var(--font-display); font-size: 22px; font-weight: 300;
+      font-style: italic; color: var(--dark); line-height: 1.2;
+    }
+
+    /* ── 등급 색상 ── */
+    .grade-STONE      { border-color:#9A9890; color:#8A8880; }
+    .grade-SILVER     { border-color:#A8A9AD; color:#A8A9AD; background:rgba(168,169,173,0.07); }
+    .grade-GOLD       { border-color:var(--antique-gold); color:var(--antique-gold); background:rgba(201,169,110,0.07); }
+    .grade-WHITEGOLD  { border-color:#B8C8D8; color:#7090A8; background:rgba(184,200,216,0.10); }
+    .grade-DIAMOND    { border-color:#7EC8E3; color:#5BAECF; background:rgba(126,200,227,0.07); }
+
+    /* ── 구분선 ── */
+    .card-divider { width: 24px; height: 1px; background: var(--gold); margin-bottom: 20px; }
+
+    /* ── 혜택 목록 ── */
+    .benefit-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
+    .benefit-item {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      line-height: 1.5;
+      padding-left: 12px;
+      position: relative;
+    }
+    .benefit-item::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-size: 10px;
+    }
+    .grade-card.current .benefit-item { color: var(--dark); }
+
+    /* ── 푸터 ── */
+    footer {
+      background: var(--dark); color: var(--sand);
+      padding: 28px 60px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .footer-logo {
+      font-family: var(--font-display); font-size: 20px; font-weight: 300;
+      letter-spacing: 6px; color: var(--sand); text-decoration: none;
+    }
+    .footer-text { font-size: 11px; color: var(--muted); letter-spacing: 2px; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── 반응형 (모바일) ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .logo { font-size: 22px; letter-spacing: 4px; }
+      .page-header { padding: 40px 20px 28px; }
+      .page-title { font-size: 36px; }
+      .grades-outer { padding: 0 16px 48px; }
+      .grades-row { grid-template-columns: 1fr 1fr; gap: 8px; padding-top: 12px; }
+      footer { padding: 20px; flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="logo" href="checkmate.html">CHECKMATE</a>
+    <a class="nav-back" href="mypage.html">← 마이페이지</a>
+  </nav>
+
+  <div class="page-header">
+    <p class="page-eyebrow">Membership</p>
+    <h1 class="page-title">등급 안내</h1>
+    <p class="page-desc">구매 금액에 따라 등급이 올라가며<br>등급별로 다양한 혜택을 제공합니다.</p>
+  </div>
+
+  <div class="grades-outer">
+    <div class="grades-row" id="grades-row"></div>
+  </div>
+
+  <footer>
+    <a class="footer-logo" href="checkmate.html">CHECKMATE</a>
+    <p class="footer-text">© 등급 안내</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp }        from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { firebaseConfig } from "./js/firebase-config.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc }  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    
+
+    const app  = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+
+    const GRADE_DEFAULTS = [
+      { key: 'STONE',     name: 'Stone',      benefits: ['기본 쇼핑 기능 이용', '신규 상품 소식 수신', '기본 고객 서비스'] },
+      { key: 'SILVER',    name: 'Silver',     benefits: ['포인트 2배 적립', '무료 기본 포장 서비스', '시즌 세일 조기 접근', '전용 CS 우선 응대'] },
+      { key: 'GOLD',      name: 'Gold',       benefits: ['포인트 3배 적립', '고급 리본 포장 서비스', '신상품 우선 구매권', '연 2회 VIP 초청 이벤트', '전담 스타일링 상담'] },
+      { key: 'WHITEGOLD', name: 'White Gold', benefits: ['포인트 4배 적립', '럭셔리 박스 포장 서비스', '프라이빗 세일 초대', '연 4회 VIP 이벤트 초청', '전담 케어 매니저 배정', '무료 각인 서비스'] },
+      { key: 'DIAMOND',   name: 'Diamond',    benefits: ['포인트 5배 적립', '프리미엄 패키지 포장', '신규 컬렉션 프라이빗 프리뷰', '모든 VIP 혜택 포함', '전용 컨시어지 서비스', '연간 스페셜 기프트 증정', '무제한 무료 각인·수선'] },
+    ];
+
+    onAuthStateChanged(auth, async (user) => {
+      let currentGrade = new URLSearchParams(location.search).get('grade') || 'STONE';
+
+      if (user) {
+        try {
+          const snap = await getDoc(doc(db, 'users', user.uid));
+          if (snap.exists()) currentGrade = snap.data().grade || 'STONE';
+        } catch { /* 무시 */ }
+      }
+
+      // Firestore에서 혜택 로드 (없으면 기본값 유지)
+      let grades = GRADE_DEFAULTS;
+      try {
+        const benefitSnap = await getDoc(doc(db, 'products', '_grade_benefits'));
+        if (benefitSnap.exists()) {
+          const data = benefitSnap.data();
+          grades = GRADE_DEFAULTS.map(g => ({
+            ...g,
+            benefits: Array.isArray(data[g.key]) && data[g.key].length > 0 ? data[g.key] : g.benefits,
+          }));
+        }
+      } catch { /* 기본값 유지 */ }
+
+      renderGrades(grades, currentGrade);
+    });
+
+    function renderGrades(grades, currentGrade) {
+      const row = document.getElementById('grades-row');
+      row.innerHTML = grades.map(g => `
+        <div class="grade-card ${g.key === currentGrade ? 'current' : ''}">
+          <span class="current-mark">내 등급</span>
+          <div class="card-top">
+            <div class="grade-badge grade-${g.key}">${g.name}</div>
+            <p class="grade-name">${g.name}</p>
+          </div>
+          <div class="card-divider"></div>
+          <ul class="benefit-list">
+            ${g.benefits.map(b => `<li class="benefit-item">${b}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+  </script>
+
+</body>
+</html>

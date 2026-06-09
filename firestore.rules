@@ -1,0 +1,92 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAdmin() {
+      return request.auth != null
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // 상품 (쿠폰 문서 _coupons 포함): 누구나 읽기, 관리자만 쓰기
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+
+      // 리뷰: 누구나 읽기, 로그인 유저만 본인 리뷰 작성/삭제
+      match /reviews/{reviewId} {
+        allow read: if true;
+        allow create: if request.auth != null
+                      && request.resource.data.userId == request.auth.uid
+                      && request.resource.data.rating >= 1
+                      && request.resource.data.rating <= 5;
+        allow delete: if request.auth != null && resource.data.userId == request.auth.uid
+                      || isAdmin();
+      }
+    }
+
+    // 사용자 문서
+    match /users/{userId} {
+      allow read:   if isOwner(userId) || isAdmin();
+      // 가입 시 role은 반드시 'user'로만 생성 가능
+      allow create: if isOwner(userId) && request.resource.data.role == 'user';
+      // role, grade, email, createdAt은 본인이 직접 수정 불가
+      allow update: if isAdmin()
+        || (isOwner(userId)
+            && !request.resource.data.diff(resource.data).affectedKeys()
+               .hasAny(['role', 'grade', 'email', 'createdAt']));
+      allow delete: if isAdmin();
+    }
+
+    // 차단 목록: 본인은 자신의 차단 여부 확인 가능, 쓰기는 관리자만
+    match /banned_users/{userId} {
+      allow read:  if isOwner(userId) || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // 주문: 로그인 유저만 생성, 가격 위변조 방지
+    match /orders/{orderId} {
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.total >= 1
+                    && (
+                      // 단일 상품 주문: price가 DB 실제 가격과 일치해야 함
+                      (request.resource.data.get('productId', null) != null
+                       && request.resource.data.price == getProductPrice(request.resource.data.productId)
+                       && request.resource.data.qty >= 1)
+                      ||
+                      // 장바구니 주문: items 배열 존재 + subtotal >= 1
+                      (request.resource.data.get('items', null) != null
+                       && request.resource.data.subtotal >= 1)
+                    );
+      allow read:   if (request.auth != null && resource.data.userId == request.auth.uid)
+                    || isAdmin();
+      allow update, delete: if isAdmin();
+    }
+
+    function getProductPrice(productId) {
+      let p = get(/databases/$(database)/documents/products/$(productId)).data;
+      return p.get('salePrice', null) != null ? p.salePrice : p.price;
+    }
+
+    // FAQ: 누구나 읽기, 관리자만 쓰기
+    match /faqs/{faqId} {
+      allow read:  if true;
+      allow write: if isAdmin();
+    }
+
+    // 관리자 알림: 로그인 유저가 생성, 읽기/수정/삭제는 관리자만
+    match /admin_notifications/{id} {
+      allow create: if request.auth != null;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // 재입고 알림: 로그인 유저가 신청/취소, 관리자는 전체 접근
+    match /restock_alerts/{productId} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
