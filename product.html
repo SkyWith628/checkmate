@@ -973,11 +973,16 @@
         const val      = btn.dataset.val;
         const label    = btn.dataset.label;
         const price = Number(btn.dataset.price) || 0;
+        const wasSelected = btn.classList.contains('selected');
         document.getElementById(`option-btns-${gi}`)
           .querySelectorAll('.option-btn')
           .forEach(b => b.classList.remove('selected'));
-        btn.classList.add('selected');
-        selectedOpts[label] = { val, price };
+        if (wasSelected) {
+          delete selectedOpts[label];
+        } else {
+          btn.classList.add('selected');
+          selectedOpts[label] = { val, price };
+        }
         const req = document.getElementById(`option-required-${gi}`);
         if (req) req.classList.remove('show');
         updateDisplayPrice();
