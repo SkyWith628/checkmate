@@ -12,7 +12,7 @@ nav {
   font-family: var(--font-display); font-size: 28px; font-weight: 300;
   letter-spacing: 8px; color: var(--dark); text-decoration: none;
 }
-.nav-links { display: flex; gap: 36px; list-style: none; }
+.nav-links { display: flex; gap: 36px; list-style: none; position: absolute; left: 50%; transform: translateX(-50%); }
 .nav-links a {
   font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
   color: var(--muted); text-decoration: none; transition: color 0.3s;
@@ -125,12 +125,12 @@ nav {
 
 /* ── 상품 그리드 ── */
 .product-section {
-  flex: 1; padding: 0 60px 80px;
+  flex: 1; padding: 0 40px 80px;
   opacity: 0; animation: fadeUp 0.6s ease 0.15s forwards;
 }
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 2px;
   padding-top: 2px;
 }
@@ -144,7 +144,7 @@ nav {
   transition: background 0.4s;
 }
 .product-card:hover .product-img-wrap { background: var(--sand); }
-.product-img-wrap img { width: 100%; height: 100%; object-fit: contain; transition: transform 0.5s ease; }
+.product-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
 .product-card:hover .product-img-wrap img { transform: scale(1.04); }
 .product-placeholder {
   font-family: var(--font-display); font-style: italic;
@@ -369,7 +369,7 @@ footer {
   .gender-filter { padding: 0 20px; }
   .gender-btn { padding: 12px 14px; font-size: 10px; }
   .product-section { padding: 0 16px 48px; }
-  .product-grid { grid-template-columns: repeat(2, 1fr); }
+  .product-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
   footer { padding: 20px !important; flex-direction: column !important; gap: 8px !important; text-align: center !important; }
 }
 
