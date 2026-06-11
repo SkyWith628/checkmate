@@ -748,6 +748,10 @@
 
     // URL에서 id 가져오기
     const productId = new URLSearchParams(location.search).get('id');
+    let productLoaded = false;
+
+    // 로그인 확인을 기다리지 않고 바로 상품 정보를 불러옴 (SEO/초기 렌더링 속도 개선)
+    loadProduct();
 
     onAuthStateChanged(auth, async (user) => {
       currentUser = user;
@@ -772,7 +776,7 @@
       } else {
         likedSet = new Set();
       }
-      loadProduct();
+      if (productLoaded) refreshUserDependentUI();
     });
 
 
@@ -815,6 +819,15 @@
       document.getElementById('loading-wrap').style.display  = 'none';
       document.getElementById('product-detail').style.display = 'grid';
 
+      productLoaded = true;
+      await refreshUserDependentUI();
+
+      // 뒤로가기 링크
+      document.getElementById('btn-back-collection').href = CAT_HREF[cat] || 'checkmate.html';
+    }
+
+    // 찜 버튼 / 품절 / 재입고 알림 — 로그인 상태(currentUser, likedSet)에 따라 갱신
+    async function refreshUserDependentUI() {
       // 찜 버튼 초기 상태
       document.getElementById('btn-like').classList.toggle('liked', likedSet.has(productId));
       updateLikeCount(product.likeCount || 0);
@@ -842,9 +855,6 @@
           }
         } catch {}
       }
-
-      // 뒤로가기 링크
-      document.getElementById('btn-back-collection').href = CAT_HREF[cat] || 'checkmate.html';
     }
 
     function showError(msg) {

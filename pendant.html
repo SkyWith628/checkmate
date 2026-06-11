@@ -47,6 +47,7 @@
     <div class="header-left">
       <p class="header-eyebrow">Collection</p>
       <h1 class="header-title">Pendant</h1>
+      <p class="header-desc">체크메이트 펜던트 컬렉션. 로즈골드, 골드, 실버 펜던트 목걸이를 만나보세요.</p>
     </div>
     <div class="header-right">
       <p class="result-count" id="result-count">0 items</p>
@@ -91,6 +92,10 @@
     let products = [];
     let likedSet = new Set();
     let likeInProgress = new Set();
+    let productsLoaded = false;
+
+    // 로그인 확인을 기다리지 않고 바로 상품 목록을 불러옴 (SEO/초기 렌더링 속도 개선)
+    loadProducts();
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
@@ -108,7 +113,7 @@
       } else {
         likedSet = new Set();
       }
-      loadProducts();
+      if (productsLoaded) renderGrid();
     });
 
 
@@ -131,6 +136,7 @@
         document.getElementById('result-count').textContent = '0 items';
         return;
       }
+      productsLoaded = true;
       renderGrid();
     }
 

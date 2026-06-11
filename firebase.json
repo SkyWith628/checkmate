@@ -23,9 +23,6 @@
     ],
     "redirects": [
       { "source": "/checkmate", "destination": "/", "type": 301 }
-    ],
-    "rewrites": [
-      { "source": "**", "destination": "/404.html" }
     ]
   }
 }
