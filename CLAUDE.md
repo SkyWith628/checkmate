@@ -99,23 +99,9 @@ node --env-file=.env.local scripts/seed-products.mjs   # 테스트 상품 시드
 | 3 카탈로그 | ✅ | `/category/[slug]`·`/product/[id]`(SSG)·`/collection`, 장바구니담기, SEO(JSON-LD/sitemap/robots) |
 | 4 주문 | ✅ | `/cart`·`/checkout`·`place_order` 연동·`/order/[id]`. E2E 검증(가격/재고/쿠폰) |
 | 5 마이페이지 | ✅ | 대시보드·주문내역·리뷰(구매인증)·쿠폰·찜. E2E 검증 |
-| **6 관리자** | 🚧 진행중 | 아래 참조 |
-| 7 SEO/테스트/배포 | ⬜ | GitHub Actions CI/CD, 도메인(추후 Google), E2E |
-| 8 데이터 마이그레이션 | ⬜ | Firestore→Supabase |
-
-### 단계 6 (관리자) 진행 상태 — 이어서 할 것
-`/admin/*` (proxy.ts가 admin 가드, `dark` 테마). 이미 만든 것:
-- `src/lib/admin-guard.ts` (`getAdmin()`), `src/lib/queries/admin.ts`, `src/lib/actions/admin.ts` (상품/옵션/주문/회원/쿠폰/FAQ 액션 전부)
-- `src/app/admin/layout.tsx`, `components/admin/admin-nav.tsx`
-- `src/app/admin/page.tsx` (대시보드: 매출·주문·재고부족)
-- `src/app/admin/products/page.tsx` (목록) + `components/admin/product-active-toggle.tsx`
-
-**남은 작업 (만들 파일):**
-- `app/admin/products/new/page.tsx`, `app/admin/products/[id]/page.tsx` + `components/admin/product-form.tsx`(client, `upsertProductAction`) + `components/admin/options-manager.tsx`(옵션그룹/값 추가·삭제)
-- `app/admin/orders/page.tsx` + `components/admin/order-status-select.tsx`(`updateOrderStatusAction`) + 송장 입력(`setTrackingAction`)
-- `app/admin/users/page.tsx` + `components/admin/user-controls.tsx`(role/grade select, ban 토글)
-- `app/admin/coupons/page.tsx` + 쿠폰 생성/지급 폼(`upsertCouponAction`/`issueCouponAction`)
-- `app/admin/faqs/page.tsx` + FAQ 관리(`upsertFaqAction`/`deleteFaqAction`)
+| **6 관리자** | ✅ | 상품/옵션/주문/회원/쿠폰/FAQ 전체 완성. 코드 리뷰 이슈 수정 완료 |
+| 7 SEO/테스트/배포 | ✅ | GitHub Actions CI, Vercel 자동배포 연동, Playwright E2E 13개 통과 |
+| 8 데이터 마이그레이션 | ➖ | 레거시 데이터 이전 없이 신규 운영으로 진행 |
 - 완료 후 typecheck/lint/build + 관리자 E2E(admin 유저로 상품/주문/쿠폰 변경, 권한 차단 확인)
 
 **첫 관리자 지정** (가입 후 SQL Editor):
