@@ -9,11 +9,9 @@
 
 ```
 checkmate/
-├─ web/          ← 신규 앱 (Next.js 16 + Supabase) — 여기서 개발
-├─ legacy/       ← 구 Firebase 정적 사이트 (디자인 참고용 보관, 개발/배포 대상 아님)
+├─ web/          ← 앱 (Next.js 16 + Supabase) — 여기서 개발
 ├─ docs/
-│  ├─ ARCHITECTURE.md      ← 전체 설계(목표). 스키마·RLS·RPC·로드맵·배포·추가기능
-│  └─ CURRENT-STRUCTURE.md ← 구 사이트(As-Is) 기록
+│  └─ ARCHITECTURE.md   ← 전체 설계(목표). 스키마·RLS·RPC·로드맵·배포·추가기능
 └─ CLAUDE.md     ← (이 파일)
 ```
 
