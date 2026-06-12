@@ -1,6 +1,6 @@
 # CHECKMATE — 프로젝트 작업 가이드 (CLAUDE.md)
 
-주얼리 이커머스 **CHECKMATE**. 기존 Firebase 정적 사이트를 **Next.js + Supabase**로 전면 재설계 중.
+주얼리 이커머스 **CHECKMATE**. Firebase 정적 사이트를 **Next.js + Supabase**로 전면 재설계 완료.
 작업/구현은 모두 레포 루트의 **`web/`** 에서 진행한다.
 
 ---
@@ -42,6 +42,8 @@ npm run dev          # 개발 (localhost:3000)
 npm run build        # 프로덕션 빌드
 npm run typecheck    # tsc --noEmit
 npm run lint         # eslint
+npm run test:e2e     # Playwright E2E 테스트 (dev 서버 자동 실행)
+npm run test:e2e:ui  # Playwright UI 모드
 node --env-file=.env.local scripts/seed-products.mjs   # 테스트 상품 시드
 ```
 
@@ -49,16 +51,23 @@ node --env-file=.env.local scripts/seed-products.mjs   # 테스트 상품 시드
 
 ---
 
-## 4. Supabase 연결
+## 4. 배포
+
+- **GitHub**: `SkyWith628/checkmate` (private)
+- **CI**: `.github/workflows/deploy.yml` — `master` push 시 typecheck + lint 자동 실행
+- **호스팅**: Vercel (GitHub 연동, `master` push 시 자동 배포)
+  - Root Directory: `web/`
+  - 환경변수: Vercel 대시보드에서 관리 (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`)
+
+---
+
+## 5. Supabase 연결
 
 - 프로젝트 ref: **`xokjeowkibmksxgebdoh`**
 - 키: `web/.env.local` (신형 `sb_publishable_` / `sb_secret_`). gitignore됨.
   - `NEXT_PUBLIC_SUPABASE_URL` 은 **베이스 URL만** (`https://xxx.supabase.co`, `/rest/v1/` 붙이지 말 것)
-- 마이그레이션: `web/supabase/migrations/*.sql`
-- **적용 방법**: Docker 없음 → 로컬 적용 불가. **대시보드 SQL Editor에 붙여넣어 Run**.
-  (`supabase db push`는 DB 비밀번호 필요. 현재 미보유.)
+- SQL 변경: `web/supabase/migrations/*.sql` 에 파일 추가 후 **대시보드 SQL Editor에 붙여넣어 Run**.
   - SQL Editor: `https://supabase.com/dashboard/project/xokjeowkibmksxgebdoh/sql/new`
-  - 새 마이그레이션 작성 시: 파일 추가 → 사용자에게 해당 파일 내용 붙여넣기 요청 → service_role로 검증.
 
 ### 클라이언트 (`src/lib/supabase/`)
 - `server.ts` — 쿠키 세션(Server Component/Action). **쿠키를 읽으면 라우트가 동적이 됨.**
@@ -68,12 +77,12 @@ node --env-file=.env.local scripts/seed-products.mjs   # 테스트 상품 시드
 
 ---
 
-## 5. DB / 보안 핵심 (절대 깨지 않게)
+## 6. DB / 보안 핵심 (절대 깨지 않게)
 
 - **신뢰 경계는 서버.** 주문/재고/가격/쿠폰은 클라가 보낸 값을 신뢰하지 않는다.
 - **`place_order(p_items, p_coupon_code, ...)` RPC** (security definer): 가격을 DB에서 확정,
   `for update` 행잠금으로 재고 차감, 쿠폰 보유/유효/최소금액 검증·단일사용. 주문은 이 RPC로만 생성.
-  - 쿠폰은 검증 통과 후 **마지막 UPDATE에서 `coupon_code` 설정**(초기 INSERT에 넣으면 FK 위반이 먼저 터짐 — 수정 완료).
+  - 쿠폰은 검증 통과 후 **마지막 UPDATE에서 `coupon_code` 설정**(초기 INSERT에 넣으면 FK 위반 — 수정 완료).
 - **RLS**: 테이블 24개 정책 53개. `is_admin()`(security definer)로 관리자 분기.
   - 주문: 본인 읽기, INSERT 정책 없음(RPC만), 수정 admin.
   - profiles: 본인/admin 읽기, `protect_profile_fields` 트리거가 일반유저의 role/grade/points/ban 변경 차단.
@@ -87,9 +96,15 @@ node --env-file=.env.local scripts/seed-products.mjs   # 테스트 상품 시드
 - **중첩 select**(`*, order_items(*)` 등)는 `Relationships`가 비어 추론 불가 → `as unknown as <Type>` 캐스팅.
 - 헬퍼: `Tables<"x">`, `TablesInsert<"x">`, `TablesUpdate<"x">`.
 
+### 첫 관리자 지정 (가입 후 SQL Editor에서 실행)
+```sql
+update profiles set role='admin'
+where id=(select id from auth.users where email='본인이메일');
+```
+
 ---
 
-## 6. 진행 현황 (로드맵)
+## 7. 진행 현황 (로드맵) — 전체 완료
 
 | 단계 | 상태 | 내용 |
 |---|---|---|
@@ -99,25 +114,19 @@ node --env-file=.env.local scripts/seed-products.mjs   # 테스트 상품 시드
 | 3 카탈로그 | ✅ | `/category/[slug]`·`/product/[id]`(SSG)·`/collection`, 장바구니담기, SEO(JSON-LD/sitemap/robots) |
 | 4 주문 | ✅ | `/cart`·`/checkout`·`place_order` 연동·`/order/[id]`. E2E 검증(가격/재고/쿠폰) |
 | 5 마이페이지 | ✅ | 대시보드·주문내역·리뷰(구매인증)·쿠폰·찜. E2E 검증 |
-| **6 관리자** | ✅ | 상품/옵션/주문/회원/쿠폰/FAQ 전체 완성. 코드 리뷰 이슈 수정 완료 |
-| 7 SEO/테스트/배포 | ✅ | GitHub Actions CI, Vercel 자동배포 연동, Playwright E2E 13개 통과 |
-| 8 데이터 마이그레이션 | ➖ | 레거시 데이터 이전 없이 신규 운영으로 진행 |
-- 완료 후 typecheck/lint/build + 관리자 E2E(admin 유저로 상품/주문/쿠폰 변경, 권한 차단 확인)
-
-**첫 관리자 지정** (가입 후 SQL Editor):
-```sql
-update profiles set role='admin'
-where id=(select id from auth.users where email='본인이메일');
-```
+| 6 관리자 | ✅ | 상품/옵션/주문/회원/쿠폰/FAQ 전체 완성. 코드 리뷰 이슈 5건 수정 |
+| 7 SEO/테스트/배포 | ✅ | GitHub Actions CI, Vercel 자동배포, Playwright E2E 13개 통과 |
+| 8 데이터 이전 | ➖ | 레거시 데이터 없이 신규 운영으로 결정 |
 
 ---
 
-## 7. 컨벤션 / 패턴
+## 8. 컨벤션 / 패턴
 
 - **데이터 읽기**: 공개=`public.ts`(SSG), 인증필요=`server.ts`. 쿼리는 `src/lib/queries/*`.
 - **변경**: `src/lib/actions/*` Server Action + Zod + `revalidatePath`.
   관리자 액션은 첫 줄에 `getAdmin()` 재검증 필수.
 - **클라 상호작용**: `useActionState`(폼) / `useTransition`(버튼) / `sonner` 토스트.
+- **`useEffect` toast deps**: `[state.error]`/`[state.ok]` 대신 `[state]` 객체 전체로 — 같은 에러 연속 발생 시 재발동 보장.
 - **카탈로그는 정적 유지**: 페이지/레이아웃에서 쿠키(인증) 읽지 말 것. 인증상태는 클라(`SiteNav`)에서.
 - **디자인 토큰**: `bg-sand`/`text-cherry`/`text-gold`/`text-dark`/`font-display` 등 (`globals.css @theme`).
   디자인은 추후 재작업 예정 — 현재는 기능 위주.
@@ -125,8 +134,9 @@ where id=(select id from auth.users where email='본인이메일');
 
 ---
 
-## 8. 검증 습관
+## 9. 검증 습관
 
-- 마이그레이션/RPC/RLS 변경 후 **service_role 스크립트로 E2E**(임시 유저 생성→동작→정리)로 확인했음.
+- SQL/RPC/RLS 변경 후 **service_role 스크립트로 E2E**(임시 유저 생성→동작→정리)로 확인.
   (예: 가격확정·재고차감·쿠폰·구매인증 트리거·RLS 차단)
 - 페이지는 `npm run build` 라우트표로 정적/동적(○/●/ƒ) 확인.
+- 코드 변경 후 `npm run typecheck && npm run lint` 통과 필수.
