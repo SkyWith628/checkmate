@@ -94,11 +94,21 @@ node --env-file=.env.local scripts/seed-products.mjs   # 테스트 상품 시드
 - **중첩 select**(`*, order_items(*)` 등)는 `Relationships`가 비어 추론 불가 → `as unknown as <Type>` 캐스팅.
 - 헬퍼: `Tables<"x">`, `TablesInsert<"x">`, `TablesUpdate<"x">`.
 
-### 첫 관리자 지정 (가입 후 SQL Editor에서 실행)
-```sql
-update profiles set role='admin'
-where id=(select id from auth.users where email='본인이메일');
+### 관리자 계정 생성/승격
+`protect_profile_fields` 트리거가 **UPDATE 로의 role 변경을 막는다**(service_role/SQL Editor 모두 `auth.uid()=null`→`is_admin()=false`). 그래서 단순 `update profiles set role='admin'` 은 `FORBIDDEN_PROFILE_FIELD` 로 실패한다.
+
+권장: 스크립트 사용 (계정 생성 + 승격을 트리거 없는 DELETE+INSERT 경로로 처리).
+```bash
+node --env-file=.env.local scripts/create-admin.mjs <email> <password> [name]
 ```
+SQL Editor에서 직접 한다면 트리거를 잠시 끄고 UPDATE:
+```sql
+alter table profiles disable trigger t_profiles_protect;
+update profiles set role='admin'
+ where id=(select id from auth.users where email='본인이메일');
+alter table profiles enable trigger t_profiles_protect;
+```
+승격 후 그 계정으로 로그인하면 nav 우상단 사용자 메뉴에 **'관리자 페이지'(→ `/admin`)** 항목이 보인다.
 
 ---
 

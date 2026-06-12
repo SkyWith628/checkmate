@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Menu, Search, ShoppingBag, User } from "lucide-react";
+import { LayoutDashboard, Menu, Search, ShoppingBag, User } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -21,8 +21,10 @@ import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-function useUserLabel(): string | null {
-  const [label, setLabel] = useState<string | null>(null);
+type UserState = { label: string | null; isAdmin: boolean };
+
+function useUser(): UserState {
+  const [state, setState] = useState<UserState>({ label: null, isAdmin: false });
 
   useEffect(() => {
     const supabase = createClient();
@@ -31,20 +33,24 @@ function useUserLabel(): string | null {
     async function load(userId: string, email: string | undefined) {
       const { data } = await supabase
         .from("profiles")
-        .select("name")
+        .select("name, role")
         .eq("id", userId)
         .single();
-      if (active) setLabel(data?.name || email || "회원");
+      if (active)
+        setState({
+          label: data?.name || email || "회원",
+          isAdmin: data?.role === "admin",
+        });
     }
 
     supabase.auth.getUser().then(({ data: { user } }) => {
       if (user) load(user.id, user.email);
-      else if (active) setLabel(null);
+      else if (active) setState({ label: null, isAdmin: false });
     });
 
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => {
       if (session?.user) load(session.user.id, session.user.email);
-      else setLabel(null);
+      else setState({ label: null, isAdmin: false });
     });
 
     return () => {
@@ -53,7 +59,7 @@ function useUserLabel(): string | null {
     };
   }, []);
 
-  return label;
+  return state;
 }
 
 function CartBadge() {
@@ -86,8 +92,8 @@ function CartBadge() {
   );
 }
 
-function UserArea({ userLabel }: { userLabel: string | null }) {
-  if (!userLabel) {
+function UserArea({ label, isAdmin }: UserState) {
+  if (!label) {
     return (
       <Link href="/login" aria-label="로그인" className="text-dark">
         <User className="h-[22px] w-[22px]" strokeWidth={1} />
@@ -98,9 +104,23 @@ function UserArea({ userLabel }: { userLabel: string | null }) {
     <DropdownMenu>
       <DropdownMenuTrigger className="flex items-center gap-1.5 text-xs tracking-[0.1em] text-cherry outline-none">
         <User className="h-[18px] w-[18px]" strokeWidth={1} />
-        <span className="hidden sm:inline">{userLabel}&thinsp;님</span>
+        <span className="hidden sm:inline">{label}&thinsp;님</span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
+        {isAdmin && (
+          <>
+            <DropdownMenuItem className="p-0">
+              <Link
+                href="/admin"
+                className="flex w-full items-center gap-2 px-2 py-1.5 font-medium text-cherry"
+              >
+                <LayoutDashboard className="h-4 w-4" strokeWidth={1.5} />
+                관리자 페이지
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuItem className="p-0">
           <Link href="/mypage" className="w-full px-2 py-1.5">
             마이페이지
@@ -136,7 +156,7 @@ function useScrolled(): boolean {
 }
 
 export function SiteNav() {
-  const userLabel = useUserLabel();
+  const user = useUser();
   const scrolled = useScrolled();
   return (
     <nav
@@ -213,7 +233,7 @@ export function SiteNav() {
         <Link href="/collection" aria-label="검색" className="text-dark">
           <Search className="h-[22px] w-[22px]" strokeWidth={1} />
         </Link>
-        <UserArea userLabel={userLabel} />
+        <UserArea label={user.label} isAdmin={user.isAdmin} />
         <Link
           href="/cart"
           aria-label="장바구니"
