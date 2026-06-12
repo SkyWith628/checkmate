@@ -1,0 +1,14 @@
+# ── OS / 에디터 ──
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# ── Firebase (레거시 호스팅) ──
+.firebase/
+
+# ── Node / Next (web/ 하위는 web/.gitignore가 처리하나 안전망) ──
+node_modules/
+.next/
+*.log
