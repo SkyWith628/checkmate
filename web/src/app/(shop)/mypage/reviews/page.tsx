@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getMyReviews, getReviewableProducts } from "@/lib/queries/account";
 import { ReviewForm } from "@/components/shop/review-form";
 import { DeleteReviewButton } from "@/components/shop/delete-review-button";
+import { Reveal } from "@/components/ui/reveal";
 
 export const metadata: Metadata = { title: "리뷰" };
 
@@ -50,8 +51,8 @@ export default async function MyReviewsPage() {
           <p className="text-sm text-muted-foreground">작성한 리뷰가 없습니다.</p>
         ) : (
           <div className="flex flex-col gap-4">
-            {myReviews.map((r) => (
-              <div key={r.id} className="border border-sand p-4">
+            {myReviews.map((r, i) => (
+              <Reveal key={r.id} delay={i * 70} as="div" className="rounded-2xl border border-sand p-4">
                 <div className="flex items-center justify-between">
                   <Link
                     href={r.product ? `/product/${r.product.id}` : "#"}
@@ -76,7 +77,7 @@ export default async function MyReviewsPage() {
                     {r.content}
                   </p>
                 )}
-              </div>
+              </Reveal>
             ))}
           </div>
         )}

@@ -10,6 +10,7 @@ import { formatKRW } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Reveal } from "@/components/ui/reveal";
 
 function SubmitButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
@@ -50,22 +51,34 @@ export function CheckoutForm({
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center gap-6 px-5 py-28 text-center">
+      <Reveal
+        as="div"
+        direction="zoom"
+        className="flex flex-col items-center gap-6 px-5 py-28 text-center"
+      >
         <p className="font-display text-2xl italic text-dark">
           주문할 상품이 없습니다
         </p>
-        <Link href="/collection" className="text-sm text-cherry underline">
+        <Link
+          href="/collection"
+          className="rounded-full bg-gold-sheen px-10 py-4 text-[11px] uppercase tracking-[0.25em] text-cherry-esp shadow-gold-glow transition-transform duration-300 [transition-timing-function:var(--ease-spring)] hover:-translate-y-0.5"
+        >
           컬렉션 둘러보기
         </Link>
-      </div>
+      </Reveal>
     );
   }
 
   return (
     <div className="mx-auto max-w-3xl px-5 py-12 md:py-16">
-      <h1 className="mb-10 font-display text-3xl font-light italic text-dark">
-        Checkout
-      </h1>
+      <Reveal>
+        <p className="text-[11px] uppercase tracking-[0.3em] text-antique-gold">
+          Almost there
+        </p>
+        <h1 className="mb-10 mt-2 font-display text-3xl font-light italic text-dark md:text-4xl">
+          Checkout
+        </h1>
+      </Reveal>
 
       <div className="grid grid-cols-1 gap-10 md:grid-cols-[1fr_320px]">
         {/* 배송/결제 폼 */}
@@ -92,12 +105,12 @@ export function CheckoutForm({
           <fieldset className="flex flex-col gap-2">
             <legend className="mb-1 text-sm font-medium">결제 수단</legend>
             <div className="flex gap-3">
-              <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 border border-sand py-3 text-sm has-[:checked]:border-dark">
-                <input type="radio" name="pay_method" value="bank" defaultChecked className="accent-dark" />
+              <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-sand py-3 text-sm transition-colors has-[:checked]:border-antique-gold has-[:checked]:bg-sand/60">
+                <input type="radio" name="pay_method" value="bank" defaultChecked className="accent-cherry" />
                 무통장 입금
               </label>
-              <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 border border-sand py-3 text-sm has-[:checked]:border-dark">
-                <input type="radio" name="pay_method" value="card" className="accent-dark" />
+              <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-sand py-3 text-sm transition-colors has-[:checked]:border-antique-gold has-[:checked]:bg-sand/60">
+                <input type="radio" name="pay_method" value="card" className="accent-cherry" />
                 카드 (준비중)
               </label>
             </div>
@@ -116,7 +129,7 @@ export function CheckoutForm({
         </form>
 
         {/* 주문 요약 */}
-        <aside className="h-fit border border-sand bg-sand/40 p-6">
+        <aside className="shadow-luxe h-fit rounded-2xl border border-sand bg-sand/40 p-6 md:sticky md:top-24">
           <h2 className="mb-4 text-xs uppercase tracking-[0.2em] text-muted-foreground">
             주문 요약
           </h2>

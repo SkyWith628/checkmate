@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getMyWishlist } from "@/lib/queries/account";
 import { ProductCard } from "@/components/shop/product-card";
+import { Reveal } from "@/components/ui/reveal";
 
 export const metadata: Metadata = { title: "찜한 상품" };
 
@@ -24,8 +25,10 @@ export default async function WishlistPage() {
 
   return (
     <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-3">
-      {products.map((p) => (
-        <ProductCard key={p.id} product={p} />
+      {products.map((p, i) => (
+        <Reveal key={p.id} delay={(i % 3) * 90}>
+          <ProductCard product={p} />
+        </Reveal>
       ))}
     </div>
   );

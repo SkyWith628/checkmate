@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getMyOrders } from "@/lib/queries/account";
 import { formatKRW } from "@/lib/format";
+import { Reveal } from "@/components/ui/reveal";
 import type { OrderStatus } from "@/lib/types/database";
 
 export const metadata: Metadata = { title: "주문 내역" };
@@ -36,14 +37,14 @@ export default async function MyOrdersPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      {orders.map((o) => {
+      {orders.map((o, i) => {
         const first = o.order_items[0];
         const more = o.order_items.length - 1;
         return (
+          <Reveal key={o.id} delay={i * 70}>
           <Link
-            key={o.id}
             href={`/order/${o.id}`}
-            className="block border border-sand p-5 transition-colors hover:border-dark"
+            className="block rounded-2xl border border-sand p-5 transition-all duration-300 [transition-timing-function:var(--ease-luxe)] hover:-translate-y-0.5 hover:border-antique-gold hover:shadow-luxe"
           >
             <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>{fmtDate(o.created_at)}</span>
@@ -63,6 +64,7 @@ export default async function MyOrdersPage() {
             </p>
             <p className="mt-1 text-sm text-gold">{formatKRW(o.total)}</p>
           </Link>
+          </Reveal>
         );
       })}
     </div>

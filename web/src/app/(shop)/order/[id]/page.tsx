@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatKRW } from "@/lib/format";
+import { Reveal } from "@/components/ui/reveal";
 import type { OrderStatus, Tables } from "@/lib/types/database";
 
 type OrderWithItems = Tables<"orders"> & {
@@ -44,19 +45,21 @@ export default async function OrderPage({
 
   return (
     <div className="mx-auto max-w-2xl px-5 py-14 md:py-20">
-      <div className="mb-10 text-center">
-        <p className="text-[11px] uppercase tracking-[0.3em] text-antique-gold">
-          Order Complete ✦
-        </p>
-        <h1 className="mt-3 font-display text-3xl font-light italic text-dark">
-          주문이 완료되었습니다
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          주문번호 <span className="text-dark">{order.order_no}</span>
-        </p>
-      </div>
+      <Reveal direction="zoom">
+        <div className="mb-10 text-center">
+          <p className="text-[11px] uppercase tracking-[0.3em] text-antique-gold">
+            Order Complete ✦
+          </p>
+          <h1 className="mt-3 font-display text-3xl font-light italic text-dark">
+            주문이 완료되었습니다
+          </h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            주문번호 <span className="text-dark">{order.order_no}</span>
+          </p>
+        </div>
+      </Reveal>
 
-      <div className="border border-sand">
+      <div className="shadow-luxe overflow-hidden rounded-2xl border border-sand">
         <div className="flex items-center justify-between border-b border-sand px-5 py-3">
           <span className="text-xs uppercase tracking-[0.15em] text-muted-foreground">
             상태
@@ -110,7 +113,7 @@ export default async function OrderPage({
         </div>
       </div>
 
-      <div className="mt-6 border border-sand px-5 py-4 text-sm text-muted-foreground">
+      <div className="mt-6 rounded-2xl border border-sand px-5 py-4 text-sm text-muted-foreground">
         <p>
           <span className="text-dark">{order.recipient}</span> · {order.phone}
         </p>
@@ -126,13 +129,13 @@ export default async function OrderPage({
       <div className="mt-10 flex justify-center gap-4">
         <Link
           href="/collection"
-          className="bg-dark px-8 py-3 text-[11px] uppercase tracking-[0.25em] text-cream transition-colors hover:bg-gold hover:text-dark"
+          className="rounded-full bg-gold-sheen px-8 py-3 text-[11px] uppercase tracking-[0.25em] text-cherry-esp shadow-gold-glow transition-transform duration-300 [transition-timing-function:var(--ease-spring)] hover:-translate-y-0.5"
         >
           쇼핑 계속하기
         </Link>
         <Link
           href="/mypage/orders"
-          className="border border-dark px-8 py-3 text-[11px] uppercase tracking-[0.25em] text-dark transition-colors hover:bg-dark hover:text-cream"
+          className="rounded-full border border-dark px-8 py-3 text-[11px] uppercase tracking-[0.25em] text-dark transition-colors hover:bg-dark hover:text-cream"
         >
           주문 내역
         </Link>
