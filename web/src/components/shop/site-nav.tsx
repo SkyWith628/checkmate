@@ -124,10 +124,29 @@ function UserArea({ userLabel }: { userLabel: string | null }) {
   );
 }
 
+function useScrolled(): boolean {
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+  return scrolled;
+}
+
 export function SiteNav() {
   const userLabel = useUserLabel();
+  const scrolled = useScrolled();
   return (
-    <nav className="sticky top-0 z-50 flex items-center justify-between border-b border-sand bg-cream px-5 py-4 md:px-[60px] md:py-7">
+    <nav
+      className={cn(
+        "sticky top-0 z-50 flex items-center justify-between px-5 transition-all duration-500 [transition-timing-function:var(--ease-luxe)] md:px-[60px]",
+        scrolled
+          ? "glass border-b border-gold/40 py-3 shadow-luxe md:py-4"
+          : "border-b border-transparent bg-cream py-4 md:py-7",
+      )}
+    >
       {/* left: mobile menu + logo */}
       <div className="flex items-center gap-4">
         <Sheet>

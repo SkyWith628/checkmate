@@ -5,6 +5,11 @@ Thumbs.db
 .idea/
 .vscode/
 
+# ── R ──
+.Rhistory
+.RData
+.Rproj.user/
+
 # ── Firebase (레거시 호스팅) ──
 .firebase/
 

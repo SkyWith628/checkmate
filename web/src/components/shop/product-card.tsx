@@ -10,32 +10,36 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <Link href={`/product/${product.id}`} className="group block">
-      <div className="relative mb-4 aspect-square overflow-hidden bg-sand">
+      <div className="shadow-luxe relative mb-4 aspect-square overflow-hidden rounded-2xl bg-sand transition-all duration-500 [transition-timing-function:var(--ease-luxe)] group-hover:-translate-y-1.5 group-hover:shadow-gold-glow">
         {img ? (
           <Image
             src={img}
             alt={product.name}
             fill
             sizes="(max-width:768px) 50vw, 25vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-[0.97]"
+            className="object-cover transition-transform duration-700 [transition-timing-function:var(--ease-luxe)] group-hover:scale-105"
           />
         ) : (
           <div className="flex h-full w-full items-center justify-center font-display text-lg italic text-muted-foreground">
             {product.name}
           </div>
         )}
+        {/* hover 광택 스윕 */}
+        <div className="shine absolute inset-0 z-10 rounded-2xl" />
         {soldOut && (
-          <span className="absolute left-3 top-3 bg-dark/80 px-2 py-1 text-[10px] uppercase tracking-[0.15em] text-cream">
+          <span className="glass-dark absolute left-3 top-3 z-20 rounded-full px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] text-cream">
             Sold Out
           </span>
         )}
         {!soldOut && onSale && (
-          <span className="absolute left-3 top-3 bg-cherry px-2 py-1 text-[10px] uppercase tracking-[0.15em] text-cream">
+          <span className="absolute left-3 top-3 z-20 rounded-full bg-cherry px-2.5 py-1 text-[10px] uppercase tracking-[0.15em] text-cream shadow-luxe">
             Sale
           </span>
         )}
       </div>
-      <h3 className="font-display text-lg font-light text-dark">{product.name}</h3>
+      <h3 className="font-display text-lg font-light text-dark transition-colors group-hover:text-cherry">
+        {product.name}
+      </h3>
       {product.material && (
         <p className="mt-0.5 text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
           {product.material}
