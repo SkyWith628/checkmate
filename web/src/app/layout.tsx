@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Noto_Serif_KR, Geist_Mono } from "next/font/google";
+import { Cormorant_Garamond, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import { Toaster } from "@/components/ui/sonner";
 import { env } from "@/lib/env";
 import "./globals.css";
@@ -12,11 +13,12 @@ const cormorant = Cormorant_Garamond({
   display: "swap",
 });
 
-const notoSerifKr = Noto_Serif_KR({
-  variable: "--font-noto-serif",
-  subsets: ["latin"],
-  weight: ["300", "400", "600"],
+// 본문 기본 폰트: Pretendard (가변, 자체 호스팅)
+const pretendard = localFont({
+  src: "./fonts/PretendardVariable.woff2",
+  variable: "--font-pretendard",
   display: "swap",
+  weight: "45 920",
 });
 
 const geistMono = Geist_Mono({
@@ -59,7 +61,7 @@ export default function RootLayout({
   return (
     <html
       lang="ko"
-      className={`${cormorant.variable} ${notoSerifKr.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${cormorant.variable} ${pretendard.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         {children}
