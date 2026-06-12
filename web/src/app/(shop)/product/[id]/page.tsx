@@ -7,6 +7,8 @@ import { CATEGORIES } from "@/lib/constants";
 import { formatKRW, effectivePrice } from "@/lib/format";
 import { AddToCart } from "@/components/shop/add-to-cart";
 import { WishlistButton } from "@/components/shop/wishlist-button";
+import { Reveal } from "@/components/ui/reveal";
+import { TiltCard } from "@/components/ui/tilt-card";
 import { env } from "@/lib/env";
 
 export const revalidate = 60; // ISR
@@ -96,27 +98,32 @@ export default async function ProductPage({
         )}
       </nav>
 
-      <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+      <div className="scene-3d grid grid-cols-1 gap-12 md:grid-cols-2">
         {/* 이미지 */}
-        <div className="relative aspect-square overflow-hidden bg-sand">
-          {img ? (
-            <Image
-              src={img}
-              alt={product.name}
-              fill
-              sizes="(max-width:768px) 100vw, 50vw"
-              className="object-cover"
-              priority
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center font-display text-2xl italic text-muted-foreground">
-              {product.name}
+        <Reveal direction="left">
+          <TiltCard max={6} className="rounded-2xl">
+            <div className="shadow-luxe relative aspect-square overflow-hidden rounded-2xl bg-sand">
+              {img ? (
+                <Image
+                  src={img}
+                  alt={product.name}
+                  fill
+                  sizes="(max-width:768px) 100vw, 50vw"
+                  className="object-cover"
+                  priority
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center font-display text-2xl italic text-muted-foreground">
+                  {product.name}
+                </div>
+              )}
+              <div className="shine absolute inset-0 z-10 rounded-2xl" />
             </div>
-          )}
-        </div>
+          </TiltCard>
+        </Reveal>
 
         {/* 정보 */}
-        <div className="flex flex-col">
+        <Reveal direction="right" className="flex flex-col">
           {product.material && (
             <p className="mb-3 text-[11px] uppercase tracking-[0.25em] text-antique-gold">
               {product.material}
@@ -167,7 +174,7 @@ export default async function ProductPage({
               </p>
             </div>
           )}
-        </div>
+        </Reveal>
       </div>
     </div>
   );

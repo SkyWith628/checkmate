@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { CATEGORIES } from "@/lib/constants";
 import { getCategory, getProductsByCategory } from "@/lib/queries/catalog";
 import { CategoryGrid } from "@/components/shop/category-grid";
+import { Reveal } from "@/components/ui/reveal";
 
 export const revalidate = 60; // ISR
 
@@ -37,16 +38,21 @@ export default async function CategoryPage({
 
   return (
     <div className="px-5 py-12 md:px-[60px] md:py-20">
-      <header className="mb-10 text-center">
-        <h1 className="font-display text-4xl font-light italic text-dark md:text-5xl">
-          {category.name}
-        </h1>
-        {category.description && (
-          <p className="mt-3 text-sm text-muted-foreground">
-            {category.description}
+      <Reveal>
+        <header className="mb-10 text-center">
+          <p className="text-[11px] uppercase tracking-[0.3em] text-antique-gold">
+            Collection
           </p>
-        )}
-      </header>
+          <h1 className="mt-3 font-display text-4xl font-light italic text-dark md:text-5xl">
+            {category.name}
+          </h1>
+          {category.description && (
+            <p className="mt-3 text-sm text-muted-foreground">
+              {category.description}
+            </p>
+          )}
+        </header>
+      </Reveal>
 
       <CategoryGrid products={products} />
     </div>

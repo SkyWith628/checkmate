@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { ProductCard } from "@/components/shop/product-card";
+import { Reveal } from "@/components/ui/reveal";
 import { effectivePrice } from "@/lib/format";
 import type { Product } from "@/lib/queries/catalog";
 
@@ -57,8 +58,10 @@ export function CategoryGrid({ products }: { products: Product[] }) {
         </p>
       ) : (
         <div className="grid grid-cols-2 gap-x-6 gap-y-12 md:grid-cols-4">
-          {sorted.map((p) => (
-            <ProductCard key={p.id} product={p} />
+          {sorted.map((p, i) => (
+            <Reveal key={p.id} delay={(i % 4) * 90}>
+              <ProductCard product={p} />
+            </Reveal>
           ))}
         </div>
       )}
