@@ -11,6 +11,8 @@
 ![Tailwind](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Deploy-Vercel-000000?logo=vercel&logoColor=white)
 
+**📅 개발 기간: 2026.03 ~ 2026.05**
+
 </div>
 
 ---
