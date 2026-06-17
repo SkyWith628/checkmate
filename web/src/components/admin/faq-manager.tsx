@@ -9,20 +9,21 @@ import {
   type ActionState,
 } from "@/lib/actions/admin";
 import type { Tables } from "@/lib/types/database";
+import {
+  panelClass,
+  adminInput,
+  adminBtnPrimary,
+} from "@/components/admin/ui";
+import { cn } from "@/lib/utils";
 
 type Faq = Tables<"faqs">;
 
-const inputCls =
-  "w-full rounded border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground";
+const inputCls = cn(adminInput, "w-full");
 
 function Submit() {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50"
-    >
+    <button type="submit" disabled={pending} className={adminBtnPrimary}>
       {pending ? "추가 중…" : "FAQ 추가"}
     </button>
   );
@@ -46,9 +47,9 @@ function AddForm() {
     <form
       ref={formRef}
       action={action}
-      className="flex flex-col gap-3 rounded-md border border-border p-5"
+      className={cn(panelClass, "flex flex-col gap-3 p-6")}
     >
-      <h2 className="font-display text-lg">새 FAQ</h2>
+      <h2 className="font-display text-xl">새 FAQ</h2>
       <input name="question" required placeholder="질문" className={inputCls} />
       <textarea name="answer" required rows={3} placeholder="답변" className={inputCls + " resize-none"} />
       <div className="flex items-center gap-3">
@@ -90,11 +91,14 @@ export function FaqManager({ faqs }: { faqs: Faq[] }) {
         {faqs.map((f) => (
           <li
             key={f.id}
-            className="flex items-start justify-between gap-4 rounded-md border border-border p-4"
+            className={cn(
+              panelClass,
+              "flex items-start justify-between gap-4 p-5",
+            )}
           >
             <div className="flex flex-col gap-1">
               <p className="text-sm font-medium text-foreground">
-                <span className="mr-2 text-xs text-muted-foreground">
+                <span className="mr-2 text-xs text-antique-gold/70">
                   #{f.sort_order}
                 </span>
                 {f.question}
@@ -107,7 +111,12 @@ export function FaqManager({ faqs }: { faqs: Faq[] }) {
           </li>
         ))}
         {faqs.length === 0 && (
-          <li className="rounded-md border border-border px-4 py-10 text-center text-muted-foreground">
+          <li
+            className={cn(
+              panelClass,
+              "px-5 py-12 text-center text-muted-foreground",
+            )}
+          >
             등록된 FAQ가 없습니다.
           </li>
         )}

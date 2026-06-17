@@ -7,9 +7,9 @@ import {
   toggleBanAction,
 } from "@/lib/actions/admin";
 import type { UserRole, UserGrade } from "@/lib/types/database";
+import { adminInputSm } from "@/components/admin/ui";
 
-const selectCls =
-  "rounded border border-border bg-background px-2 py-1 text-sm outline-none focus:border-foreground disabled:opacity-50";
+const selectCls = adminInputSm;
 
 const ROLES: UserRole[] = ["user", "admin"];
 const GRADES: UserGrade[] = ["bronze", "silver", "gold", "vip"];
@@ -66,10 +66,10 @@ export function UserControls({
         disabled={pending}
         onClick={() => start(() => toggleBanAction(userId, !banned))}
         className={
-          "rounded px-2 py-1 text-xs disabled:opacity-50 " +
+          "rounded-full px-3 py-1 text-xs transition-colors disabled:opacity-50 " +
           (banned
-            ? "bg-destructive/20 text-destructive"
-            : "bg-muted text-muted-foreground hover:text-foreground")
+            ? "bg-cherry/20 text-cherry-light ring-1 ring-cherry/40 hover:bg-cherry/30"
+            : "bg-white/5 text-muted-foreground ring-1 ring-white/10 hover:text-foreground")
         }
       >
         {banned ? "차단 해제" : "차단"}

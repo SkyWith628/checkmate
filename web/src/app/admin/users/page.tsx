@@ -1,42 +1,43 @@
 import { getAdminUsers } from "@/lib/queries/admin";
 import { UserControls } from "@/components/admin/user-controls";
+import { PageHeader, Panel, tableHead, tableRow } from "@/components/admin/ui";
 
 export default async function AdminUsersPage() {
   const users = await getAdminUsers();
 
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="font-display text-2xl">회원 ({users.length})</h1>
+    <div className="flex flex-col gap-8">
+      <PageHeader eyebrow="Members" title="회원" count={`${users.length}명`} />
 
-      <div className="overflow-x-auto rounded-md border border-border">
+      <Panel className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-card text-left text-xs uppercase tracking-[0.1em] text-muted-foreground">
+          <thead className={tableHead}>
             <tr>
-              <th className="px-4 py-3">이름</th>
-              <th className="px-4 py-3">이메일</th>
-              <th className="px-4 py-3">연락처</th>
-              <th className="px-4 py-3 text-right">포인트</th>
-              <th className="px-4 py-3">가입일</th>
-              <th className="px-4 py-3">권한 / 등급 / 차단</th>
+              <th className="px-5 py-3.5">이름</th>
+              <th className="px-5 py-3.5">이메일</th>
+              <th className="px-5 py-3.5">연락처</th>
+              <th className="px-5 py-3.5 text-right">포인트</th>
+              <th className="px-5 py-3.5">가입일</th>
+              <th className="px-5 py-3.5">권한 / 등급 / 차단</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody>
             {users.map((u) => (
-              <tr key={u.id} className="hover:bg-card/50">
-                <td className="px-4 py-3 text-foreground">{u.name ?? "-"}</td>
-                <td className="px-4 py-3 text-muted-foreground">
+              <tr key={u.id} className={tableRow}>
+                <td className="px-5 py-3.5 text-foreground">{u.name ?? "-"}</td>
+                <td className="px-5 py-3.5 text-muted-foreground">
                   {u.email ?? "-"}
                 </td>
-                <td className="px-4 py-3 text-muted-foreground">
+                <td className="px-5 py-3.5 text-muted-foreground">
                   {u.phone ?? "-"}
                 </td>
-                <td className="px-4 py-3 text-right text-muted-foreground">
+                <td className="px-5 py-3.5 text-right text-muted-foreground">
                   {u.points_balance.toLocaleString("ko-KR")}
                 </td>
-                <td className="whitespace-nowrap px-4 py-3 text-muted-foreground">
+                <td className="whitespace-nowrap px-5 py-3.5 text-muted-foreground">
                   {new Date(u.created_at).toLocaleDateString("ko-KR")}
                 </td>
-                <td className="px-4 py-3">
+                <td className="px-5 py-3.5">
                   <UserControls
                     userId={u.id}
                     role={u.role}
@@ -50,7 +51,7 @@ export default async function AdminUsersPage() {
               <tr>
                 <td
                   colSpan={6}
-                  className="px-4 py-10 text-center text-muted-foreground"
+                  className="px-5 py-12 text-center text-muted-foreground"
                 >
                   회원이 없습니다.
                 </td>
@@ -58,7 +59,7 @@ export default async function AdminUsersPage() {
             )}
           </tbody>
         </table>
-      </div>
+      </Panel>
     </div>
   );
 }

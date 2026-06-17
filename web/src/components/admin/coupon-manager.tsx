@@ -11,21 +11,24 @@ import {
 } from "@/lib/actions/admin";
 import { formatKRW } from "@/lib/format";
 import type { Tables } from "@/lib/types/database";
+import {
+  Panel,
+  StatusPill,
+  panelClass,
+  adminInput as inputCls,
+  adminLabel as labelCls,
+  adminBtnPrimary,
+  tableHead,
+  tableRow,
+} from "@/components/admin/ui";
+import { cn } from "@/lib/utils";
 
 type Coupon = Tables<"coupons">;
-
-const inputCls =
-  "rounded border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground";
-const labelCls = "flex flex-col gap-1 text-sm text-muted-foreground";
 
 function Submit({ children }: { children: string }) {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50"
-    >
+    <button type="submit" disabled={pending} className={adminBtnPrimary}>
       {pending ? "처리 중…" : children}
     </button>
   );
@@ -49,9 +52,9 @@ function CouponCreateForm() {
     <form
       ref={formRef}
       action={action}
-      className="grid gap-4 rounded-md border border-border p-5 sm:grid-cols-2"
+      className={cn(panelClass, "grid gap-4 p-6 sm:grid-cols-2")}
     >
-      <h2 className="font-display text-lg sm:col-span-2">쿠폰 생성 / 수정</h2>
+      <h2 className="font-display text-xl sm:col-span-2">쿠폰 생성 / 수정</h2>
       <label className={labelCls}>
         코드 *
         <input name="code" required placeholder="WELCOME10" className={inputCls} />
@@ -86,6 +89,7 @@ function CouponCreateForm() {
   );
 }
 
+
 function IssueForm() {
   const formRef = useRef<HTMLFormElement>(null);
   const [state, action] = useActionState<ActionState, FormData>(
@@ -104,9 +108,9 @@ function IssueForm() {
     <form
       ref={formRef}
       action={action}
-      className="flex flex-wrap items-end gap-3 rounded-md border border-border p-5"
+      className={cn(panelClass, "flex flex-wrap items-end gap-3 p-6")}
     >
-      <h2 className="font-display text-lg basis-full">회원에게 쿠폰 지급</h2>
+      <h2 className="font-display text-xl basis-full">회원에게 쿠폰 지급</h2>
       <label className={labelCls}>
         쿠폰 코드
         <input name="code" required placeholder="WELCOME10" className={inputCls} />
@@ -143,58 +147,56 @@ export function CouponManager({ coupons }: { coupons: Coupon[] }) {
       <CouponCreateForm />
       <IssueForm />
 
-      <div className="overflow-x-auto rounded-md border border-border">
+      <Panel className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-card text-left text-xs uppercase tracking-[0.1em] text-muted-foreground">
+          <thead className={tableHead}>
             <tr>
-              <th className="px-4 py-3">코드</th>
-              <th className="px-4 py-3">이름</th>
-              <th className="px-4 py-3">할인</th>
-              <th className="px-4 py-3 text-right">최소주문</th>
-              <th className="px-4 py-3">상태</th>
-              <th className="px-4 py-3" />
+              <th className="px-5 py-3.5">코드</th>
+              <th className="px-5 py-3.5">이름</th>
+              <th className="px-5 py-3.5">할인</th>
+              <th className="px-5 py-3.5 text-right">최소주문</th>
+              <th className="px-5 py-3.5">상태</th>
+              <th className="px-5 py-3.5" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-border">
+          <tbody>
             {coupons.map((c) => (
-              <tr key={c.code} className="hover:bg-card/50">
-                <td className="px-4 py-3 font-mono text-foreground">{c.code}</td>
-                <td className="px-4 py-3 text-muted-foreground">{c.label}</td>
-                <td className="px-4 py-3">
+              <tr key={c.code} className={tableRow}>
+                <td className="px-5 py-3.5 font-mono text-foreground">
+                  {c.code}
+                </td>
+                <td className="px-5 py-3.5 text-muted-foreground">{c.label}</td>
+                <td className="px-5 py-3.5">
                   {c.discount_type === "percent"
                     ? `${c.discount_value}%`
                     : formatKRW(c.discount_value)}
                 </td>
-                <td className="px-4 py-3 text-right text-muted-foreground">
+                <td className="px-5 py-3.5 text-right text-muted-foreground">
                   {c.min_order ? formatKRW(c.min_order) : "-"}
                 </td>
-                <td className="px-4 py-3">
-                  <span
-                    className={
-                      "rounded px-2 py-0.5 text-xs " +
-                      (c.is_active
-                        ? "bg-emerald-900/40 text-emerald-400"
-                        : "bg-muted text-muted-foreground")
-                    }
-                  >
+                <td className="px-5 py-3.5">
+                  <StatusPill active={c.is_active}>
                     {c.is_active ? "활성" : "비활성"}
-                  </span>
+                  </StatusPill>
                 </td>
-                <td className="px-4 py-3 text-right">
+                <td className="px-5 py-3.5 text-right">
                   <DeleteButton code={c.code} />
                 </td>
               </tr>
             ))}
             {coupons.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-10 text-center text-muted-foreground">
+                <td
+                  colSpan={6}
+                  className="px-5 py-12 text-center text-muted-foreground"
+                >
                   쿠폰이 없습니다.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
-      </div>
+      </Panel>
     </div>
   );
 }

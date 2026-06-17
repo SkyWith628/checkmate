@@ -7,14 +7,16 @@ export default async function NewProductPage() {
 
   return (
     <div className="flex max-w-3xl flex-col gap-6">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-col gap-1.5 border-b border-[rgba(201,169,110,0.15)] pb-5">
         <Link
           href="/admin/products"
-          className="text-sm text-muted-foreground hover:text-foreground"
+          className="text-xs text-muted-foreground transition-colors hover:text-antique-gold"
         >
-          ← 목록
+          ← 상품 목록
         </Link>
-        <h1 className="font-display text-2xl">새 상품</h1>
+        <h1 className="font-display text-3xl leading-none text-foreground">
+          새 상품
+        </h1>
       </div>
 
       <p className="text-sm text-muted-foreground">

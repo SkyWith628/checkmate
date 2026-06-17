@@ -4,9 +4,9 @@ import { useActionState, useEffect, useRef } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 import { setTrackingAction, type ActionState } from "@/lib/actions/admin";
+import { adminInputSm } from "@/components/admin/ui";
 
-const inputCls =
-  "rounded border border-border bg-background px-2 py-1 text-sm outline-none focus:border-foreground";
+const inputCls = adminInputSm;
 
 function Submit() {
   const { pending } = useFormStatus();
@@ -14,7 +14,7 @@ function Submit() {
     <button
       type="submit"
       disabled={pending}
-      className="rounded border border-border px-3 py-1 text-sm text-foreground hover:bg-card disabled:opacity-50"
+      className="rounded-full border border-[rgba(201,169,110,0.3)] px-3.5 py-1.5 text-sm text-foreground/80 transition-colors hover:border-antique-gold hover:text-foreground disabled:opacity-50"
     >
       {pending ? "등록 중…" : "송장 등록"}
     </button>
