@@ -48,3 +48,11 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# create-next-app 스캐폴드 잔재 / 미사용 브랜드 에셋 (OneDrive 동기화 재출현 방지)
+/public/brand/
+/public/file.svg
+/public/globe.svg
+/public/next.svg
+/public/vercel.svg
+/public/window.svg
