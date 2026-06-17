@@ -9,22 +9,23 @@ import {
   type ActionState,
 } from "@/lib/actions/admin";
 import type { Tables } from "@/lib/types/database";
+import {
+  panelClass,
+  adminInput,
+  adminLabel as labelCls,
+  adminBtnPrimary,
+} from "@/components/admin/ui";
+import { cn } from "@/lib/utils";
 
 type Product = Tables<"products">;
 type Category = Tables<"categories">;
 
-const inputCls =
-  "w-full rounded border border-border bg-background px-3 py-2 text-sm outline-none focus:border-foreground";
-const labelCls = "flex flex-col gap-1 text-sm text-muted-foreground";
+const inputCls = cn(adminInput, "w-full");
 
 function Submit() {
   const { pending } = useFormStatus();
   return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="rounded bg-primary px-4 py-2 text-sm text-primary-foreground disabled:opacity-50"
-    >
+    <button type="submit" disabled={pending} className={adminBtnPrimary}>
       {pending ? "저장 중…" : "저장"}
     </button>
   );
@@ -175,7 +176,7 @@ export function ProductForm({
         />
       </label>
 
-      <div className="flex flex-wrap gap-x-6 gap-y-2 rounded border border-border p-4">
+      <div className={cn(panelClass, "flex flex-wrap gap-x-6 gap-y-3 p-5")}>
         <Check name="is_active" label="판매중" defaultChecked={product?.is_active ?? true} />
         <Check name="is_sold_out" label="품절" defaultChecked={product?.is_sold_out ?? false} />
         <Check name="allow_engraving" label="각인 가능" defaultChecked={product?.allow_engraving ?? false} />

@@ -17,10 +17,10 @@ export function ProductActiveToggle({
       disabled={pending}
       onClick={() => start(() => toggleProductActiveAction(id, !active))}
       className={
-        "rounded px-2 py-0.5 text-xs " +
+        "rounded-full px-2.5 py-0.5 text-xs transition-colors disabled:opacity-50 " +
         (active
-          ? "bg-emerald-900/40 text-emerald-400"
-          : "bg-muted text-muted-foreground")
+          ? "bg-emerald-500/12 text-emerald-300 ring-1 ring-emerald-500/25 hover:bg-emerald-500/20"
+          : "bg-white/5 text-muted-foreground ring-1 ring-white/10 hover:text-foreground")
       }
     >
       {active ? "판매중" : "숨김"}

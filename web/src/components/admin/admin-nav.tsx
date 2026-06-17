@@ -17,9 +17,12 @@ const TABS = [
 export function AdminNav() {
   const pathname = usePathname();
   return (
-    <header className="flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-border bg-card px-6 py-4">
-      <Link href="/admin" className="font-display text-xl tracking-[0.2em]">
-        CHECKMATE <span className="text-xs text-muted-foreground">ADMIN</span>
+    <header className="glass-dark sticky top-0 z-20 flex flex-wrap items-center gap-x-6 gap-y-2 border-b border-[rgba(201,169,110,0.18)] px-6 py-4">
+      <Link href="/admin" className="font-display text-xl tracking-[0.22em]">
+        CHECKMATE{" "}
+        <span className="text-[10px] uppercase tracking-[0.35em] text-antique-gold/80">
+          Admin
+        </span>
       </Link>
       <nav className="flex flex-1 flex-wrap gap-1">
         {TABS.map((t) => {
@@ -31,9 +34,9 @@ export function AdminNav() {
               key={t.href}
               href={t.href}
               className={cn(
-                "px-3 py-1.5 text-sm transition-colors",
+                "relative px-3 py-1.5 text-sm transition-colors",
                 active
-                  ? "text-foreground"
+                  ? "text-foreground after:absolute after:inset-x-3 after:-bottom-px after:h-px after:bg-antique-gold"
                   : "text-muted-foreground hover:text-foreground",
               )}
             >
@@ -42,12 +45,15 @@ export function AdminNav() {
           );
         })}
       </nav>
-      <div className="flex items-center gap-3 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-foreground">
+      <div className="flex items-center gap-4 text-xs text-muted-foreground">
+        <Link href="/" className="transition-colors hover:text-antique-gold">
           쇼핑몰로
         </Link>
         <form action={signOutAction}>
-          <button type="submit" className="hover:text-foreground">
+          <button
+            type="submit"
+            className="transition-colors hover:text-antique-gold"
+          >
             로그아웃
           </button>
         </form>

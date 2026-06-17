@@ -11,9 +11,10 @@ import {
 } from "@/lib/actions/admin";
 import { formatKRW } from "@/lib/format";
 import type { AdminProductDetail } from "@/lib/queries/admin";
+import { panelClass, adminInputSm } from "@/components/admin/ui";
+import { cn } from "@/lib/utils";
 
-const inputCls =
-  "rounded border border-border bg-background px-2 py-1 text-sm outline-none focus:border-foreground";
+const inputCls = adminInputSm;
 
 function AddGroup({ productId }: { productId: string }) {
   const [label, setLabel] = useState("");
@@ -35,7 +36,7 @@ function AddGroup({ productId }: { productId: string }) {
             setLabel("");
           })
         }
-        className="rounded bg-primary px-3 py-1 text-sm text-primary-foreground disabled:opacity-50"
+        className="rounded-full bg-antique-gold px-4 py-1.5 text-sm font-medium text-dark transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0"
       >
         그룹 추가
       </button>
@@ -69,7 +70,7 @@ function AddValue({
       <input name="stock" type="number" placeholder="재고(선택)" className={inputCls + " w-24"} />
       <button
         type="submit"
-        className="rounded border border-border px-3 py-1 text-sm text-foreground hover:bg-card"
+        className="rounded-full border border-[rgba(201,169,110,0.3)] px-3.5 py-1.5 text-sm text-foreground/80 transition-colors hover:border-antique-gold hover:text-foreground"
       >
         값 추가
       </button>
@@ -89,7 +90,7 @@ export function OptionsManager({ product }: { product: AdminProductDetail }) {
       )}
 
       {product.product_options.map((group) => (
-        <div key={group.id} className="rounded border border-border p-4">
+        <div key={group.id} className={cn(panelClass, "p-5")}>
           <div className="mb-3 flex items-center justify-between">
             <h3 className="text-sm font-medium text-foreground">{group.label}</h3>
             <button
@@ -108,7 +109,7 @@ export function OptionsManager({ product }: { product: AdminProductDetail }) {
             {group.product_option_values.map((v) => (
               <li
                 key={v.id}
-                className="flex items-center justify-between rounded bg-card px-3 py-1.5 text-sm"
+                className="flex items-center justify-between rounded-lg bg-[rgba(201,169,110,0.06)] px-3 py-2 text-sm"
               >
                 <span className="text-foreground">
                   {v.name}

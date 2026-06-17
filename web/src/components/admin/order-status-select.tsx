@@ -3,6 +3,7 @@
 import { useTransition } from "react";
 import { updateOrderStatusAction } from "@/lib/actions/admin";
 import type { OrderStatus } from "@/lib/types/database";
+import { adminInputSm } from "@/components/admin/ui";
 
 const STATUSES: { value: OrderStatus; label: string }[] = [
   { value: "pending", label: "결제대기" },
@@ -30,7 +31,7 @@ export function OrderStatusSelect({
           updateOrderStatusAction(orderId, e.target.value as OrderStatus),
         )
       }
-      className="rounded border border-border bg-background px-2 py-1 text-sm outline-none focus:border-foreground disabled:opacity-50"
+      className={adminInputSm}
     >
       {STATUSES.map((s) => (
         <option key={s.value} value={s.value}>
