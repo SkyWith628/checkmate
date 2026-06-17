@@ -29,8 +29,8 @@
 | 🔐 인증 | 이메일+비밀번호 / Google OAuth, 세션 기반 보호 라우트 |
 | 🛒 주문 | 장바구니(localStorage) → 주문서 → **원자적 `place_order` RPC**(가격확정·재고차감·쿠폰검증) |
 | 👤 마이페이지 | 대시보드·주문내역·**구매인증 리뷰**·쿠폰·찜 |
-| 🧑‍💼 관리자 | 상품/옵션/주문/회원/쿠폰/FAQ 관리, 역할 기반 접근 제어 |
-| 🎨 디자인 | 3D 럭셔리 UI — 스크롤 reveal·포인터 틸트·glass·gold 그라데이션 (순수 CSS + IntersectionObserver) |
+| 🧑‍💼 관리자 | 상품/옵션/주문/회원/쿠폰/FAQ 관리, 역할 기반 접근 제어, **고객 면과 통일된 럭셔리 백오피스** |
+| 🎨 디자인 | 3D 럭셔리 UI — 스크롤 reveal·진행률 바·포인터 틸트·glass·gold 그라데이션 (순수 CSS + IntersectionObserver) |
 
 ## 기술 스택
 
