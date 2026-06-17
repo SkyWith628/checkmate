@@ -1,5 +1,6 @@
 import { SiteNav } from "@/components/shop/site-nav";
 import { SiteFooter } from "@/components/shop/site-footer";
+import { ScrollProgress } from "@/components/shop/scroll-progress";
 
 /**
  * 인증 상태는 SiteNav가 클라이언트에서 조회한다.
@@ -12,6 +13,7 @@ export default function ShopLayout({
 }) {
   return (
     <>
+      <ScrollProgress />
       <SiteNav />
       <main className="flex-1">{children}</main>
       <SiteFooter />
