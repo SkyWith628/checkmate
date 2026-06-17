@@ -17,3 +17,7 @@ Thumbs.db
 node_modules/
 .next/
 *.log
+
+# ── 재설계로 폐기된 구 사이트·구 구조 문서 (OneDrive 동기화 재출현 방지) ──
+/legacy/
+/docs/CURRENT-STRUCTURE.md
